@@ -1,0 +1,1854 @@
+{% assign grcap_anchor_product_content = '<span class="grcap_anchor_product">' | append: product.description | append: '</span>' %}
+{% assign gem_list_data = '' %}
+{% for tag in product.tags %}
+{% if tag contains "Gemstone Colour:" %}
+{% assign gemstoneColorData = tag %}
+{% assign gemstoneColorData = tag %}
+{% assign gemcoemptylordata = gemstoneColorData | split: "Gemstone Colour:" %}
+{% assign gem_list_data = gem_list_data | append:gemcolordata[1] %}
+{% endif %}
+{% endfor %}
+{% assign metal_list_data = '' %} 
+{% for tag in product.tags %}
+{% if tag contains "Metal:" %}
+{% assign metalColorData = tag %}
+{% assign metalcolordata = metalColorData | split: "Metal:" %}
+{% assign metal_list_data = metal_list_data | append:metalcolordata[1] %}
+{% endif %}
+{% endfor %}
+<script type="text/javascript">
+  document.onload = setTimeout(function () {
+    console.log(window.ga);
+    console.log('ga');
+      ga('set','dimension2', 'product'); // Where [PAGETYPE] is equal to a related l  
+      ga('set','dimension7', '{{product.vendor}}');
+      ga('set','dimension8', '{{ metal_list_data }}'); 
+      ga('set','dimension9', '{{ gem_list_data }}');
+  }, 10000);
+</script>
+{% include 'bold-product' with product, hide_action: 'break' %}{% if bold_hidden_product %}{% break %}{% endif %}
+
+
+{% assign show_single_variant_details = true %}
+
+{% assign variant = product.selected_or_first_available_variant %}
+{% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
+
+{% assign inStore = false %}
+{% assign coming = false %}
+{% assign fastdelivery = false %}
+{% assign certification = false %}
+{% assign DGA = false %}
+{% assign bestbuy = false %}
+{% for tag in product.tags %}
+  {% if tag == section.settings.prod_instore %}
+    {% assign inStore = true %}
+  {% endif %}
+  {% if tag == 'coming-soon' %}
+    {% assign coming = true %}
+  {% endif %}
+  {% if tag == 'FastDelivery' %}
+	{% assign fastdelivery = true %}
+  {% endif %}
+{% if tag == 'DGA' %}
+	{% assign DGA = true %}
+  {% endif %}
+  {% if tag == 'Certification:IGI Certified' %}
+	{% assign certification = true %}
+  {% endif %}
+  {% if tag == 'best-buy' %}
+	{% assign bestbuy = true %}
+  {% endif %}
+{% endfor %}
+{% if variant.inventory_management == 'shopify' %}
+{% if fastdelivery == false and DGA == false %}   
+{% assign slowDispatch = true %}
+{% endif %}
+{% endif %}
+
+<div class="container product-container"  data-section-type="product-template">
+
+{% include 'structured-data' %}
+
+
+  {% unless template contains 'lightbox' %}
+
+  {% if collection %}
+  <div class="inline-row">
+    {% if collection %}
+    <div class="next-prev inline-item left links-row desktop">
+      <span class="back-link">
+        <span>{{ 'products.product.back_to_html' | t }}</span> <a href="{{ collection.url }}" title="{{ collection.title | escape }}" class="standard-link">{{ collection.title }}</a>
+      </span>
+    </div>
+
+    <div class="inline-item right last desktop">
+      {% if collection.previous_product %}
+      <a class="standard-link" href="{{ collection.previous_product }}">{{ 'products.product.previous' | t }}</a>
+      {% if collection.next_product %} <span class="divider">/</span> {% endif %}
+      {% endif %}
+
+      {% if collection.next_product %}
+      <a class="standard-link" href="{{ collection.next_product }}">{{ 'products.product.next' | t }}</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% comment %}
+    <!-- Begin breadcrumbs -->
+    <div class="breadcrumbs inline-item left">
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="{{ shop.url }}" title="{{ shop.name | escape }}" itemprop="url"><span itemprop="title">{{ 'general.breadcrumbs.home' | t }}</span></a></span>
+
+      {% if collection %}
+      <span class="divider">{{ 'general.breadcrumbs.divider_html' | t }}</span>
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="{{ collection.url }}" title="{{ collection.title | escape }}" itemprop="url"><span itemprop="title">{{ collection.title }}</span></a></span>
+      {% endif %}
+
+      <span class="divider">{{ 'general.breadcrumbs.divider_html' | t }}</span>
+      <strong>{{ product.title }}</strong>
+    </div>
+    <!-- End breadcrumbs -->
+    {% endcomment %}
+  </div>
+  {% endif %}
+
+  {% endunless %}
+  {% if collection %}
+  <div class="links-row mobile section large-hide">
+    <a class="back-link" href="{{ collection.url }}" title="{{ collection.title | escape }}">
+      {% include 'svg-chevron-left' %} <span class="beside-svg standard-link">{{ collection.title }}</span>
+    </a>
+
+    {% if collection.previous_product %}
+    <a class="standard-link" href="{{ collection.previous_product }}">{{ 'products.product.previous' | t }}</a>
+    {% if collection.next_product %} <span class="divider">/</span> {% endif %}
+    {% endif %}
+
+    {% if collection.next_product %}
+    <a class="standard-link" href="{{ collection.next_product }}">{{ 'products.product.next' | t }}</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  <div class="row light-space-above space-under">
+    <script type = "text/javascript">  
+    UnbxdAnalyticsConf = window . UnbxdAnalyticsConf || {}; UnbxdAnalyticsConf [ 'pid' ] = "{{ product.id }}";  
+    </script>  
+    <!-- begin gallery -->
+    <div class="product-gallery half column" data-enable-zoom="{{ section.settings.enable_product_image_zoom }}" data-full-image-width="{{ featured_image.width }}">
+      <div id="virtooal-widget-container"></div>
+      <div class="main">
+        <a class="main-img-link {% unless template contains 'lightbox' %}main-img-link--lightbox{% endunless %}" href="{% unless template contains 'lightbox' %}{{ featured_image | img_url: 'master' }}{% else %}{{ product.url | within: collection }}{% endunless %}" title="">
+          {% include 'responsive-image', image: featured_image %}
+        </a>
+        <span class="wishlistitem ftc">
+          <a data-product="{{ product.id }}" data-variant="{{ product.selected_or_first_available_variant.id }}" data-producthandle="{{product.handle}}" href="javascript:void(0)">
+            <svg style="enable-background:new 0 0 128 128;" version="1.1" viewBox="0 0 128 128" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g class="st0" id="Layer_1"/><g id="Layer_2"><path class="st2" d="M57.3,32.7c-9.2-9.2-24.1-9.2-33.3,0c-9.2,9.2-9.2,24.1,0,33.3l6.7,6.7L64,106l33.3-33.3L104,66   c9.2-9.2,9.2-24.1,0-33.3s-24.1-9.2-33.3,0L64,39.4"/></g></svg>
+          </a> 
+        </span>
+      </div>
+
+      {% if product.media.size > 1 %}
+      <div class="thumbnails slick-slider--indented-side-icons">
+        {% for image in product.images %}
+        <a class="thumbnail" href="{{ image | img_url: 'master' }}" data-src="{{ image | img_url: '842x' }}" data-full-image-width="{{ image.width }}" style="width: {{ image.aspect_ratio | times: 70 }}px">
+          {% include 'responsive-image', image: image %}
+        </a>
+        {% endfor %}
+        {% for media in product.media %}
+          {% include 'media' %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      {% if product.metafields.bevillesnew.pro_compliment and product.metafields.bevillesnew.pro_compliment != blank %}
+
+      {% assign proComplimentContent = '' %}
+  <div class="compliment_block hide_on_mobile">
+    {% assign complimenting_products = product.metafields.bevillesnew.pro_compliment | split: "|" %}
+    {% for compliment_handle in complimenting_products %}
+    {% assign compliment_product = all_products[compliment_handle] %}
+    {% comment %}<a class="" href="{{ compliment_handle }}" title="{{ compliment_product.title }}">
+      <img src="{{ all_products[compliment_handle].featured_image | img_url: '200x200' }}" alt="{{ all_products[compliment_handle].title | escape }}" >
+    </a>{% endcomment %}
+    {% if compliment_product.available and compliment_product.available != blank %}
+    
+    {% assign img_src = compliment_product.featured_image | img_url: "200x200"  %}
+    {% assign proComplimentContent = proComplimentContent| append: '<a class="" href="' | append:compliment_handle | append:'"title="' | append:compliment_product.title | append: '"><img onerror="this.src=' | append:"'https://cdn.shopify.com/shopifycloud/shopify/assets/no-image-50-3d8cc48bd078edcd544c8d60f929ed2d8800a3fc52e0f602e84b1767e392bfcd_2048x.gif'"| append:';" src='| append:img_src | append: '/></a>'| append: '|&' %}
+    {% endif %}
+    {% endfor %}
+    {% assign proComplimentContent = proComplimentContent | split: '|&' %}
+  			{% if proComplimentContent.size > 0 %}
+          	<div class="title"><h4>Matching Product</h4></div>
+    		<div class="matching_products_content">
+            	{{ proComplimentContent }}
+    		</div>
+            {% endif %}
+  </div>
+      {% endif %}
+    </div>
+    <!-- end gallery -->
+
+    <!-- begin product form and details -->
+    <div class="half column product-details">
+      <div class="border-bottom product-section padless-top cf product-title-row">
+		
+        <h1 class="product-title" itemprop="name">{{ product.title }}</h1>
+        
+        {% if section.settings.prod_show_sku %}
+        	<div class="space-under sku sku--desktop {% if product.selected_or_first_available_variant.sku == blank %}sku--no-sku{% endif %}">{{ 'products.product.sku' | t }} <span class="sku__value">{{ product.selected_or_first_available_variant.sku }}</span></div>
+		{% endif %}
+
+        <div class="PDPbadgeBox">
+        {% for tag in product.tags %}
+          {% if tag == settings.best_buy_tag %}
+               <div class="product-badge" style="color: {{settings.best_buy_background}}">{{ 'collections.badge.best_buy_tag_text' | t  }}</div>
+          {% endif %}
+        {% endfor %}
+        </div>
+        
+        
+        
+        {% if product.metafields.spr.reviews != blank and 1 != 1 %}
+          <div class="themed-product-reviews">
+            <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+          </div>
+        {% endif %}
+        <div class="ruk_rating_snippet" data-sku="{{ product.handle }};{{ product.variants | map: 'sku' | join: ';' }};{{ product.variants | map: 'id' | join: ';' }}"></div>
+        
+        <div class="offers_zone">
+          {% if product.metafields.Sale_eleven.sale_tag_11 != blank %}
+          <div class="sale sale_1" style="background:{{ product.metafields.color_option_2.sale_1_bg_color }};color:{{ product.metafields.color_option_1.color }};">{{ product.metafields.Sale_eleven.sale_tag_11 }}</div>
+          {% endif %}
+          {% if product.metafields.Sale_two.sale_2 != blank %}
+          <div class="sale sale_2" style="background:{{ product.metafields.color_option_4.sale_2_bg_color }};color:{{ product.metafields.color_option_3.sale_2_text_color }};">{{ product.metafields.Sale_two.sale_2 }}</div>
+          {% endif %}
+          {% if product.metafields.Sale_three.sale_3 != blank %}
+          <div class="sale sale_3" style="background:{{ product.metafields.color_option_6.sale_3_bg_color }};color:{{ product.metafields.color_option_5.sale_3_text_color }};">{{ product.metafields.Sale_three.sale_3 }}</div>
+          {% endif %}
+          {% if product.metafields.Sale_four.sale_4 %}
+          <div class="sale sale_4" style="background:{{ product.metafields.color_option_8.sale_4_bg_color }};color:{{ product.metafields.color_option_7.sale_4_text_color }};">{{ product.metafields.Sale_four.sale_4 }}</div>
+          {% endif %}
+        </div>
+        
+        {% if certification == true %}
+          <div class="igi-logo">
+            <a href="https://www.bevilles.com.au/blogs/news/why-you-should-buy-an-igi-certified-diamond">
+              <div class="custom-tooltip">
+                <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/IGI.png?v=1600930633" width="100" alt=""/>
+                <div class="tooltip-text">International Gemological Institute (IGI) is one of the largest Independent laboratory for grading and evaluating diamonds</div>
+              </div>              	
+            </a>
+          </div>
+        {% endif %}
+        
+        {% if bestbuy == true %}
+          <div class="best-buy">
+            <div class="every-day-best-buy">
+              <p>{{ settings.best_buy_tag_text }}</p>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% unless product.available %}
+            {% if coming == true %}
+          		<div class="rte space-below">
+            		<div class="coming-soon">
+            			<p>Coming Soon</p>
+            		</div>
+          		</div>
+          	{% endif %}
+        {% endunless %}
+        
+        {% include 'product-intro-offer' %}
+        {%if settings.enable_memberprice %}
+                {% assign member_price = product.metafields.bevillesnew.member_price | plus:0 %}
+        		{% assign member_price_condition = member_price | times: 100 %}
+                {% if member_price > 0 and product.selected_or_first_available_variant.price > member_price_condition %}
+                
+                <div class="memberprice">
+                  Member Price <span>{{member_price | times: 100 | money}}</span>
+                  {% unless customer %}
+                  <div class="custom-tooltip">
+                    <div class="tooltip-icon">?</div>
+                    <div class="tooltip-text">
+                      <a href="/account/register"> Join </a> or <a data-fancybox href="#login_popup">Login</a> to our Eternity Club to get these exclusive member only prices
+                      <!--<a data-fancybox href="#login_popup">Login</a>
+<a href="/account/register">Register</a> -->
+                    </div>
+                  </div>
+                  {% endunless %}
+                </div>
+
+                {% endif %}
+                {% endif %}
+        <div id="price" class="product-price {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}on-sale{% endif %}">
+          
+          
+          {% if coming != true %}
+          <span class="current-price theme-money">{{ product.selected_or_first_available_variant.price | money }}</span>
+
+          {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+            <span class="product-badge on-sale"> Save
+              {{ product.selected_or_first_available_variant.compare_at_price | minus: product.selected_or_first_available_variant.price | times: 100.0 | divided_by: product.selected_or_first_available_variant.compare_at_price | round }}%
+            </span>
+
+            <span class="product-compare-price-wrap">
+              {% include 'product-intro-offer-after-sale' %}
+
+              <span class="was-price theme-money">
+                {{ product.selected_or_first_available_variant.compare_at_price | money }}
+              </span>
+            </span>
+          {% endif %}
+          {% endif %}
+          {% assign product_tags = product.tags | join: '' | downcase %}
+          <div class="product__labels product__labels--desktop">
+            {% assign diamond_tags = settings.diamond_tags | split: ',' %}
+            {% for item in diamond_tags %}
+              {% if product_tags contains item %}
+                <div class="product__label" style="background-color: {{ settings.diamond_color }}">
+                  {% if settings.diamond_icon %}
+                    <img src="{{ settings.diamond_icon | img_url: '40x' }}" class="product__label-icon">
+                  {% endif %}
+                  <div class="product__label-text">
+                    {{ settings.diamond_text }}
+                  </div>
+                </div>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+            {% assign white_gold_tags = settings.white_gold_tags | split: ',' %}
+            {% for item in white_gold_tags %}
+              {% if product_tags contains item %}
+                <div class="product__label" style="background-color: {{ settings.white_gold_color }}">
+                  {% if settings.white_gold_icon %}
+                    <img src="{{ settings.white_gold_icon | img_url: '40x' }}" class="product__label-icon">
+                  {% endif %}
+                  <div class="product__label-text">
+                    {{ settings.white_gold_text }}
+                  </div>
+                </div>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+            {% assign yellow_gold_tags = settings.yellow_gold_tags | split: ',' %}
+            {% for item in yellow_gold_tags %}
+              {% if product_tags contains item %}
+                <div class="product__label" style="background-color: {{ settings.yellow_gold_color }}">
+                  {% if settings.yellow_gold_icon %}
+                    <img src="{{ settings.yellow_gold_icon | img_url: '40x' }}" class="product__label-icon">
+                  {% endif %}
+                  <div class="product__label-text">
+                    {{ settings.yellow_gold_text }}
+                  </div>
+                </div>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+            {% assign sterling_silver_tags = settings.sterling_silver_tags | split: ',' %}
+            {% for item in sterling_silver_tags %}
+              {% if product_tags contains item %}
+                <div class="product__label" style="background-color: {{ settings.sterling_silver_color }}">
+                  {% if settings.sterling_silver_icon %}
+                    <img src="{{ settings.sterling_silver_icon | img_url: '40x' }}" class="product__label-icon">
+                  {% endif %}
+                  <div class="product__label-text">
+                    {{ settings.sterling_silver_text }}
+                  </div>
+                </div>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% if section.settings.prod_show_sku %}
+          <div class="space-under sku sku--mobile {% if product.selected_or_first_available_variant.sku == blank %}sku--no-sku{% endif %}">{{ 'products.product.sku' | t }} <span class="sku__value">{{ product.selected_or_first_available_variant.sku }}</span></div>
+        {% endif %}
+		{% assign gemstoneContent = '' %}
+          {% assign gem_list = '' %}
+
+          {% assign watches = false %}
+          {% for collection in product.collections %}
+              {% assign product_collection = collection.handle %}
+              {% if product_collection == 'watches' %}
+                  {% assign watches = true %}
+              {% endif %}
+          {% endfor %}
+        
+        {% if watches == true %}
+          <div class="varient_blocks">
+            <div class="varient_block border"> 
+                <div class="title"><h4>Available Colour</h4></div> 
+              {% assign wcolor = product.title %}
+              {% for tag in product.tags %}
+          		{% if tag contains "Watch Colour:" %}
+              {% assign wColor = tag %}
+                      {% assign wColor = tag %}
+                      {% assign wcolor = wColor | split: "Watch Colour:" %}
+              {% assign wcolor = wcolor[1] %}
+              {% endif %}
+              {% endfor %}
+              
+                    <a  class="current_metal available_watch_color" href="javascript:void(0)" title="{{ wcolor }}">
+                        <img src="{{ product.featured_image | img_url: '50x50'}}" alt="{{ product.title | escape }}">
+                    </a>
+              		{% if product.metafields.bevillesnew.pro_metal and product.metafields.bevillesnew.pro_metal != blank %}
+              		{% assign allwatchcolors = product.metafields.bevillesnew.pro_metal | split: "|" %}
+
+                  {% for col_handle in allwatchcolors %}   
+              		{% assign coldata = col_handle | split: ":" %}
+                    {% assign col_handledata = coldata[0] %}
+                    {% assign col_title = coldata[1] %}
+              
+                      <a class="available_watch_color" href="{{ col_handledata }}" title="{{ col_title }}">
+                          <img src="{{ all_products[col_handledata].featured_image | img_url: '50x50'}}" alt="{{ col_title | escape }}">
+                      </a>
+                  {% endfor %}
+              {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        
+        
+          {% if watches == true %}
+        	{% comment %}
+          <div class="varient_blocks">
+            <div class="varient_block border"> 
+                <div class="title"><h4>Available Colour</h4></div> 
+                    <a  class="current_metal available_watch_color" href="javascript:void(0)" title="{{ product.title }}">
+                        <img src="{{ product.featured_image | img_url: '50x50'}}" alt="{{ product.title | escape }}">
+                    </a>
+              {% endcomment %}
+          {% else %}
+              {% for tag in product.tags %}
+                  {% if tag contains "Gemstone Colour:" %}
+                      {% assign gemstoneColor = tag %}
+                      {% assign gemstoneColor = tag %}
+                      {% assign gemcolor = gemstoneColor | split: "Gemstone Colour:" %}
+                      {% assign gem_list = gem_list | append:gemcolor[1] | append: '-handle:javascript:void(0)' | append:'-active|&' %}
+                  {% endif %}
+              {% endfor %}
+          {% endif %} 
+          {% if product.metafields.bevillesnew.pro_color and product.metafields.bevillesnew.pro_color != blank %}
+              {% assign allcolors = product.metafields.bevillesnew.pro_color | split: "|" %}
+
+              {% if watches == true %}
+              {% comment %}
+                  {% for col_handle in allcolors %}    
+                      <a class="available_watch_color" href="{{ col_handle }}" title="{{ all_products[col_handle].title }}">
+                          <img src="{{ all_products[col_handle].featured_image | img_url: '50x50'}}" alt="{{ all_products[col_handle].title | escape }}">
+                      </a>
+                  {% endfor %}
+              {% endcomment %}
+              {% else %}
+                  {% for col_handle in allcolors %} 
+                      {% assign gemcolor = gemstoneColor | split: "Gemstone Colour:" %}
+                      {% assign alltags = all_products[col_handle].tags %}
+                      {% for tag in alltags %}
+                          {% if tag contains "Gemstone Colour:" %}
+                              {% assign gemstoneColor = tag %}
+                              {% assign gemcolor = gemstoneColor | split: "Gemstone Colour:" %}
+                              {% assign gem_list = gem_list | append:gemcolor[1] | append: '-handle:/products/' | append:col_handle | append:'|&' %}
+                          {% endif %}
+                      {% endfor %}
+                  {% endfor %}
+              {% endif %}
+          {% endif %}
+
+          {% assign gem_list = gem_list | split: '|&' %}
+          {% if gem_list.size > 0 %}
+              {% assign gem_list = gem_list | sort %}
+              {% for gem in gem_list %}
+                  {% assign active_class = '' %}
+                  {% if gem contains "-active" %}
+                      {% assign active_class = 'current_metal' %}
+              		  {% assign gemName = gem | split: '-handle:' %}
+              		  {% assign show_gem_name = gemName[0] %}
+                  {%endif%}
+                  {% if gem contains "White" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/White_2.png?v=1617608969" %}           		
+                  {% elsif gem contains "Light Blue" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Light_Blue.png?v=1617608969" %} 
+                  {% elsif gem contains "Dark Blue" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Dark_Blue.png?v=1617608969" %} 
+                  {% elsif gem contains "Blue" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Blue.png?v=1618287014" %} 
+                  {% elsif gem contains "Purple" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/purple.jpg?v=1621817168" %} 
+                  {% elsif gem contains "Green" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Green.png?v=1617679759" %} 
+                  {% elsif gem contains "Red" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Red.png?v=1617608969" %} 
+                  {% elsif gem contains "Pink" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Pink.png?v=1617608969" %} 
+                  {% elsif gem contains "Grey" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Grey.png?v=1618287014" %} 
+                  {% elsif gem contains "Brown" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Brown.png?v=1618287014" %} 
+                  {% elsif gem contains "Black" %}
+                  {% assign gemstoneImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Black.png?v=1618287014" %} 
+                  {% endif %}
+                  {% assign gemName = gem | split: '-handle:' %}
+
+                  {% assign gemHandle = gemName[1] | split: '-active' %}
+
+                  {% assign gemstoneContent = gemstoneContent| append: '<a class="' | append:active_class | append:'" href="' | append:gemHandle[0] | append:'"title="' | append:gemName[0] | append: '"><img src='| append:gemstoneImg | append: '/></a>'| append: '|&' %}
+
+              {% endfor %}
+          {% endif %}
+          {% assign gemstoneContent = gemstoneContent | split: '|&' %}
+          {% if gemstoneContent.size > 0 %}
+              <div class="varient_blocks">
+          		<div class="varient_block border"> 
+                  <div class="title"><h4>Available Gemstone : {{ show_gem_name }}</h4></div>
+                  {{ gemstoneContent }}
+                  </div>
+                </div>
+          {% endif %}
+          
+            {% if watches == true %}  
+              {% comment %}
+          </div>
+        </div>
+        {% endcomment %}
+        {% endif %}
+          
+              
+          {% assign metalContent = '' %}
+          {% assign metal_list = '' %} 
+          {% for tag in product.tags %}
+              {% if tag contains "Metal:" %}
+                  {% assign metalColor = tag %}
+                  {% assign metalcolor = metalColor | split: "Metal:" %}
+                  {% assign metal_list = metal_list | append:metalcolor[1] | append: '-handle:javascript:void(0)' | append:'-active|&' %}
+              {% endif %}
+          {% endfor %}
+		
+          {% assign metal_list = metal_list | split: '|&' %}
+          {% if metal_list.size > 1 %}
+          	{% for metalColor in metal_list %}
+                {% if metalColor contains "Infusion" %}
+          		{%else%}
+          			{% assign metal_list = metal_list | where: metalColor %}
+          		{% endif %}
+          {% endfor %}
+          {%  assign metal_list = metal_list | join: ', ' %}
+          {% assign metal_list = metal_list | append: '|&' %}
+          {% else %}
+          {%  assign metal_list = metal_list | join: ', ' %}
+          {% assign metal_list = metal_list | append: '|&' %}
+          {% endif %}
+          {% if product.metafields.bevillesnew.pro_metal and product.metafields.bevillesnew.pro_metal != blank %}
+              {% assign allmetals = product.metafields.bevillesnew.pro_metal | split: "|" %}
+              {% for metal_handle in allmetals %}
+              	{% assign alltags = all_products[metal_handle].tags %}
+        		{% assign metalwithcolor = ''%}
+        		{% assign tagincontains = ''%}
+        		{% for tag in alltags %}
+        			{% assign tagincontains = tagincontains | append:' ' | append:tag %}
+        		{% endfor %} 
+        		{% if tagincontains contains 'Metal:Yellow' %}
+        			{% assign metalwithcolor = 'Metal:Yellow' %}
+        		{% elsif tagincontains contains 'Metal:Rose' %}
+        			{% assign metalwithcolor = 'Metal:Rose' %}
+        		{% elsif tagincontains contains 'Metal:White' %}
+        			{% assign metalwithcolor = 'Metal:White' %}
+        		{% elsif tagincontains contains 'Metal:Gold' %}
+        			{% assign metalwithcolor = 'Metal:Gold' %}
+        		{% elsif tagincontains contains 'Metal:Tungsten' %}
+        			{% assign metalwithcolor = 'Metal:Tungsten' %}
+        		{% elsif tagincontains contains 'Metal:Silver' %}
+        			{% assign metalwithcolor = 'Metal:Silver' %}
+        		{% elsif tagincontains contains 'Metal:Stainless' %}
+        			{% assign metalwithcolor = 'Metal:Stainless' %}
+        		{% elsif tagincontains contains 'Metal:Black' %}
+        			{% assign metalwithcolor = 'Metal:Black' %}
+        		{% endif %}
+                {% for tag in alltags %}
+        		  {% if metalwithcolor != ''%}
+        		  	{% if tag contains metalwithcolor %}
+                      {% assign metalColor = tag %}
+                      {% assign metalcolor = metalColor | split: "Metal:" %}
+                      {% assign metal_list = metal_list | append:metalcolor[1] | append: '-handle:/products/' | append:metal_handle | append:'|&' %}
+        				{% break %}
+                    {% endif %}
+                  {% elsif tag contains "Metal:" %}
+                    {% assign metalColor = tag %}
+                    {% assign metalcolor = metalColor | split: "Metal:" %}
+                    {% assign metal_list = metal_list | append:metalcolor[1] | append: '-handle:/products/' | append:metal_handle | append:'|&' %}
+       				{% break %}
+                  {% endif %}
+                {% endfor %} 
+          
+              {% endfor %}
+          {% endif %}
+          {% assign metal_list = metal_list | split: '|&' %}
+          {% if metal_list.size > 0 %}
+              {% assign metal_list = metal_list | sort %}
+              {% for metalColor in metal_list %}
+                  {% assign active_class = '' %}
+                  {% if metalColor contains "-active" %}
+                      {% assign active_class = 'current_metal' %}
+        				{% assign metName = metalColor | split: '-handle:' %}
+              		  {% assign show_met_name = metName[0] %}
+                  {%endif%}
+                  {% if metalColor contains "Rose" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Rose_Gold.jpg?v=1616385271" %}           		
+                  {% elsif metalColor contains "White Gold" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/White_Gold.jpg?v=1616385271" %} 
+                  {% elsif metalColor contains "Yellow" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Yellow_Gold.jpg?v=1616385271" %} 
+                  {% elsif metalColor contains "Gold Infusion" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Yellow_Gold.jpg?v=1616385271" %} 
+                  {% elsif metalColor contains "Gold" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Gold.png?v=1618287014" %} 
+                  {% elsif metalColor contains "Tungsten" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Tungsten.jpg?v=1616385271" %} 
+                  {% elsif metalColor contains "Silver" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Silver_e474ddc7-7b21-487c-9711-b0e1e688ded2.jpg?v=1616385271" %} 
+                  {% elsif metalColor contains "Stainless Steel" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Silver_e474ddc7-7b21-487c-9711-b0e1e688ded2.jpg?v=1616385271" %} 
+                  {% elsif metalColor contains "Black" %}
+                      {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Black.png?v=1618287014" %} 
+                  {% endif %}
+                  {% assign metalName = metalColor | split: '-handle:' %}
+
+                  {% assign metalHandle = metalName[1] | split: '-active' %}
+
+                  {% assign metalContent = metalContent| append: '<a class="' | append:active_class | append:'" href="' | append:metalHandle[0] | append:'"title="' | append:metalName[0] | append: '"><img src='| append:metalImg | append: '/></a>'| append: '|&' %}
+
+              {% endfor %}
+          {% endif %}
+          {% assign metalContent = metalContent | split: '|&' %}
+        	{% comment %}
+          {% if metalContent.size > 0 %}
+        	<div class="varient_blocks"> 
+              <div class="title"><h4>Available Metal: {{ show_met_name }} </h4></div>
+              {{ metalContent }}
+              </div>
+          {% endif %}
+        {% endcomment %}
+      
+        {% if watches == false %}
+        <!--<p>Jaydip Metal code </p> -->
+        {% assign newmetal_list = '' %}
+        {% assign newmetal_list = '' %}
+        {% assign newmetalContent = '' %}
+        {% for tag in product.tags %}
+          {% if tag contains "Metal:" %}
+            {% assign newmetalcolor = tag | split: "Metal:" %}
+        	{% if tag contains "Rose" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Rose-Gold.png?v=1628132100" %}           		
+            {% elsif tag contains "White Gold" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-White.png?v=1628152617" %} 
+            {% elsif tag contains "Yellow" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Gold.png?v=1628132100" %} 
+            {% elsif tag contains "Gold Infusion" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Gold.png?v=1628132100" %} 
+            {% elsif tag contains "Gold" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Gold.png?v=1628132100" %} 
+            {% elsif tag contains "Tungsten" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-black.png?v=1628132099" %} 
+            {% elsif tag contains "Silver" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Silver.png?v=1628132100" %} 
+            {% elsif tag contains "Stainless Steel" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Grey.png?v=1628132099" %} 
+            {% elsif tag contains "Black" %}
+            	{% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-black.png?v=1628132099" %} 
+            {% endif %}
+        	{% assign newmetalContent = newmetalContent| append: '<a class="current_metal"'| append:' href="javascript:void(0)" title="' | append:newmetalcolor[1] | append: '"><img src='| append:metalImg | append: '/></a>' %}
+        	{% break %}
+          {% endif %}
+        {% endfor %}
+        {% if product.metafields.bevillesnew.pro_metal and product.metafields.bevillesnew.pro_metal != blank %}
+        	{% assign allmetals = product.metafields.bevillesnew.pro_metal | split: "|" %}
+            {% for metal in allmetals %}
+				{% assign metaldata = metal | split: ":" %}
+        		{% assign metalhandle = metaldata[0] %}
+        		{% assign newmetalcolor = metaldata[1] %}
+        		
+        		{% if newmetalcolor contains "Rose" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Rose-Gold.png?v=1628132100" %}           		
+                {% elsif newmetalcolor contains "White Gold" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-White.png?v=1628152617" %} 
+                {% elsif newmetalcolor contains "Yellow" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Gold.png?v=1628132100" %} 
+                {% elsif newmetalcolor contains "Gold Infusion" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Gold.png?v=1628132100" %} 
+                {% elsif newmetalcolor contains "Gold" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Gold.png?v=1628132100" %} 
+                {% elsif newmetalcolor contains "Tungsten" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-black.png?v=1628132099" %} 
+                {% elsif newmetalcolor contains "Silver" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Silver.png?v=1628132100" %} 
+                {% elsif newmetalcolor contains "Stainless Steel" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-Grey.png?v=1628132099" %} 
+                {% elsif newmetalcolor contains "Black" %}
+                    {% assign metalImg = "https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Indicator-black.png?v=1628132099" %} 
+                {% endif %}
+        		{% assign newmetalContent = newmetalContent| append: '<a class=""'| append:' href="' | append: metalhandle |  append: '" title="' | append:newmetalcolor | append: '"><img src="'| append:metalImg | append: '"></a>' %}
+            {% endfor %}
+        {% endif %}
+        {% if newmetalContent != '' %}
+        <div class="varient_blocks"> 
+          <div class="title"><h4>Available Metal: {{ show_met_name }} </h4></div>
+          {{ newmetalContent }}
+        </div>
+        {% endif %}
+<!--<p>Jaydip Metal code end</p> -->
+        {% endif %}
+        
+        {% if product.metafields.bevillesnew.pro_length and product.metafields.bevillesnew.pro_length != blank %}
+		{% assign dropdown_title = 'Available Size' %}
+         {% for collection in product.collections %}
+			{% if collection.title == 'Necklaces' %}
+        		{% assign search_keyword = 'Necklace Length:' %}
+        		{% assign dropdown_title = 'Available Length' %}
+        	{% elsif collection.title == 'Rings' %}
+        		{% assign search_keyword = 'Ring Size:' %}
+        		{% assign dropdown_title = 'Available Size' %}
+            {% elsif collection.title == 'Bangles' %}
+                {% assign search_keyword = 'Bangle Size:' %}
+        		{% assign dropdown_title = 'Available Size' %}
+         	{% elsif collection.title == 'Bracelets' %}
+                {% assign search_keyword = 'Bracelet Length:' %}
+        		{% assign dropdown_title = 'Available Length' %}
+        	{% elsif collection.title == 'Earrings' %}
+                {% assign search_keyword = 'Earring Size' %}
+        		{% assign dropdown_title = 'Available Size' %}
+            {% endif %}
+         {% endfor %}
+        
+            {% if search_keyword %}
+              {% assign all_lengths = product.metafields.bevillesnew.pro_length | split: "|" %}
+              {% assign lengthContent = "" %}
+        	  {% assign length = "" %}
+              {% for len_handle in all_lengths %} 
+              	{% assign alltags = all_products[len_handle].tags %}
+                  {% for tag in alltags %}
+                    {% if tag contains search_keyword %}
+                      {% assign length_tag = tag | split: ":"  %}
+                      {% assign length = length | append:length_tag[1] | append: '-handle:' | append:len_handle | append: '|&' %}        
+                    {% endif %}
+                  {% endfor %} 
+              {% endfor %}
+        		{% assign length = length | split: '|&' %}
+        		{% if length.size > 0 %}
+        		{% for len in length %} 
+        		{% assign lenVal = len | split: '-handle:' %}
+        
+                  {% assign lengthContent = lengthContent| append: '<option value="/products/' | append:lenVal[1]  | append: '">' | append: lenVal[0] | append: '</option>'| append: '|&' %}
+                 {% endfor %}
+                {% endif %}
+              {% assign lengthContent = lengthContent | split: '|&' %}
+              {% if lengthContent.size > 0 %}
+              <div class="product_length_available">                       
+                <select class="available_length" onchange="location = this.value;"><option>{{ dropdown_title }}</option>
+                  {{ lengthContent }}
+                </select>
+              </div>
+              {% endif %}
+          	{% endif %}
+        {% endif %}
+       
+        {% assign product_tags = product.tags | join: '' | downcase %}
+        <div class="product__labels product__labels--mobile">
+          {% assign diamond_tags = settings.diamond_tags | split: ',' %}
+          {% for item in diamond_tags %}
+            {% if product_tags contains item %}
+              <div class="product__label" style="background-color: {{ settings.diamond_color }}">
+                {% if settings.diamond_icon %}
+                  <img src="{{ settings.diamond_icon | img_url: '40x' }}" class="product__label-icon">
+                {% endif %}
+                <div class="product__label-text">
+                  {{ settings.diamond_text }}
+                </div>
+              </div>
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          {% assign white_gold_tags = settings.white_gold_tags | split: ',' %}
+          {% for item in white_gold_tags %}
+            {% if product_tags contains item %}
+              <div class="product__label" style="background-color: {{ settings.white_gold_color }}">
+                {% if settings.white_gold_icon %}
+                  <img src="{{ settings.white_gold_icon | img_url: '40x' }}" class="product__label-icon">
+                {% endif %}
+                <div class="product__label-text">
+                  {{ settings.white_gold_text }}
+                </div>
+              </div>
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          {% assign yellow_gold_tags = settings.yellow_gold_tags | split: ',' %}
+          {% for item in yellow_gold_tags %}
+            {% if product_tags contains item %}
+              <div class="product__label" style="background-color: {{ settings.yellow_gold_color }}">
+                {% if settings.yellow_gold_icon %}
+                  <img src="{{ settings.yellow_gold_icon | img_url: '40x' }}" class="product__label-icon">
+                {% endif %}
+                <div class="product__label-text">
+                  {{ settings.yellow_gold_text }}
+                </div>
+              </div>
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          {% assign sterling_silver_tags = settings.sterling_silver_tags | split: ',' %}
+          {% for item in sterling_silver_tags %}
+            {% if product_tags contains item %}
+              <div class="product__label" style="background-color: {{ settings.sterling_silver_color }}">
+                {% if settings.sterling_silver_icon %}
+                  <img src="{{ settings.sterling_silver_icon | img_url: '40x' }}" class="product__label-icon">
+                {% endif %}
+                <div class="product__label-text">
+                  {{ settings.sterling_silver_text }}
+                </div>
+              </div>
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+
+
+        {% capture currentPrice %}
+          {{ product.selected_or_first_available_variant.price }}
+        {% endcapture %}
+        {% assign currentPrice = currentPrice | divided_by: 100.0 %}
+
+        {% capture paymentThreshold %}
+          {{ settings.payment_threshold }}
+        {% endcapture %}
+        {% comment %} convert string to integer / decimal {% endcomment %}
+        {% assign paymentThreshold = paymentThreshold | divided_by: 1 %}
+
+        {% include 'product-payment-options', currentPrice, paymentThreshold %}
+
+        {{ section.settings.related_products_handle_1 }}
+      </div>
+
+      <div class="product-section {% if section.settings.enable_payment_button %}padless-bottom{% endif %} {% unless section.settings.description_location == 'under' or template contains 'lightbox' %}border-bottom{% endunless %}">
+        
+        {% if product.available %}
+
+          {% capture history_state_data %}{% unless template contains 'lightbox' %}true{% else %}false{% endunless %}{% endcapture %}
+
+          {% if inStore == false %}
+        	<div class="quickbuy-form">
+            {% form 'product', product, class: 'product-form showpopAjax', data-product-id: product.id, data-enable-history-state: history_state_data %}
+
+              <div class="payment-and-quantity {% if section.settings.enable_payment_button %}payment-and-quantity--buttons-active{% endif %} {% if section.settings.prod_show_quantity_input %}payment-and-quantity--with-quantity{% endif %}">
+                <div class="item-cart-action">
+
+                  {% if coming != true %}
+                  {% if fastdelivery == true %}
+                    <div class="fast-delivery">
+                      <!--<p>This product is dispatched in 1-5 business days</p> -->
+                      <div class="fast-dispatched-icon">
+                        <p>Dispatch next Business day</p> <i class="fas fa-shipping-fast"></i>
+                      </div>
+                    </div>
+                  {% endif %}
+                  {% endif %}
+                  {% comment %}
+                  {% if slowDispatch == true %}
+                	<span class="slowDispatchText">This product is not shipped from our warehouse, and will have a delay in delivery</span>
+                  {% endif %}
+{% endcomment %}
+                    {% if section.settings.prod_show_quantity_input %}
+                      <div class="quantity" style="">
+                        <label for="quantity">{{ 'products.product.quantity' | t }}</label>
+                        <input class="select-on-focus bevs-fields item__quantity" type="text" size="3" id="quantity" name="quantity" value="1" />
+                      </div>
+                    {% else %}
+                      <input type="hidden" name="quantity" value="1" />
+                    {% endif %}
+
+                  {% assign isshowvariant = false %}
+                  {% if product.variants.size >= 1 %}
+
+                    <div class="option-selectors" data-box-options="{{ section.settings.prod_clicky_opt_names | escape }}">
+                      {% for option in product.options_with_values %}
+                      <div class="selector-wrapper cf">
+                        {% if section.settings.show_size_chart and option.name == section.settings.size_chart_variant %}
+                          <div class="opposing-items">
+                            <label class="left" for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                            <span class="size-chart-container">
+                              <a href="#size-chart-content" class="size-chart-link">
+                                {{ section.settings.size_chart_label }}
+                              </a>
+                              <div id="size-chart-content" class="hidden">
+                                <div class="size-chart">
+                                  <div class="size-chart__inner rte">
+                                    {{ pages[section.settings.size_chart_page].content }}
+                                  </div>
+                                </div>
+                              </div>
+                            </span>
+                          </div>
+                        {% else %}
+                          <label {% if option.name == 'Title' and product.variants.size == 1 %}class="hidden"{% endif %} for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                        {% endif %}
+                        
+						{% if option.name != 'Title' or product.variants.size > 1 %}
+                          {% assign isshowvariant = true %}
+                          <select id="option-{{ option.name | handle }}" class="bevs-fields">
+                            {% for value in option.values %}
+                            <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>
+                              {{ value }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        {% endif %}
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                    <select name="id" class="original-selector" style="display:none;">
+                      {% for variant in product.variants %}
+                      <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %} selected="selected"{% endif %} data-stock="{% if variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0 %}out{% endif %}">{{ variant.title | escape }}</option>
+                      {% endfor %}
+                    </select>
+
+                  {% else %}
+                    {% unless show_single_variant_details == false or product.has_only_default_variant %}
+                      {%- assign opt_idx = '' -%}
+                      {%- capture option_list -%}
+                        {%- for option in product.options -%}
+                          {%- if option != 'Title' -%}
+                            {%- assign opt_idx = 'option' | append: forloop.index -%}
+                            {{ option }}: {{ product.variants.first[opt_idx] }}<br/>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- endcapture -%}
+                      {%- if opt_idx != blank -%}
+                        <div class="selector-wrapper single-option">{{ option_list }}</div>
+                      {%- endif -%}
+                    {% endunless %}
+
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
+                  {% endif %}
+                </div>
+                 
+               
+                  {% if isshowvariant == true %}
+                    {% for collection in product.collections %}
+                      {% assign product_collection = collection.handle %}
+                      {% if product_collection == 'rings' %}
+                      <div style="width:100%;">
+                        <a href='https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Bevilles_Ring_Size_Chart.pdf?v=1622531232' data-fancybox class='ring-size-info-link fancybox'>Find your ring size here</a>
+                        {% comment %}
+                        <div id="ring-size-page-modal" style="display:none;">{{ pages.ring-sizing.content }}</div>
+                        {% endcomment %}
+                      </div>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                
+                <div class="bold_options" data-product-id="{{ product.id }}"></div>
+                
+                 <div class="product-description-for-custom" style="display:none;">
+                  {{ grcap_anchor_product_content }}
+                </div>
+                
+                <div class="product-description-test">
+                  {% include 'product-description' %}
+                </div>
+                
+                <div class="product-attributes-test">
+                  {% include 'product-attributes' %}
+                </div>
+                <div class="pdp-button-wrapper">
+                  <div class="ro_widget"></div>
+                  <div class="pdp-button-box">
+                    <div class="button-entry">
+                      <button unbxdattr="AddToCart" unbxdparam_sku="{{product.selected_or_first_available_variant.sku}}" unbxdparam_variant="{{ product.selected_or_first_available_variant.id }}" unbxdparam_qty="1" type="submit" name="add" id="add" class="btn product-add {% if section.settings.enable_payment_button %}alt{% endif %}">{{ 'products.product.add_to_cart_html' | t }}</button>
+                    </div>
+                    <span class="wishlistitem ftc">
+                      <a data-product="{{ product.id }}" data-variant="{{ product.selected_or_first_available_variant.id }}" data-producthandle="{{product.handle}}" href="javascript:void(0)">
+                        <svg style="enable-background:new 0 0 128 128;" version="1.1" viewBox="0 0 128 128" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g class="st0" id="Layer_1"/><g id="Layer_2"><path class="st2" d="M57.3,32.7c-9.2-9.2-24.1-9.2-33.3,0c-9.2,9.2-9.2,24.1,0,33.3l6.7,6.7L64,106l33.3-33.3L104,66   c9.2-9.2,9.2-24.1,0-33.3s-24.1-9.2-33.3,0L64,39.4"/></g></svg>
+                        </a> 
+                    </span>
+                    <div class="button-entry pdpcnc" style="display:none;">
+                      <a id="pdpcncpopup" class="btn" onClick="BEVDCNC.clickandcollect.pdppopup()" data-product="{{ product.id }}" data-variant="{{ product.selected_or_first_available_variant.id }}" data-producttitle="{{product.title}}" data-productsku="{{product.selected_or_first_available_variant.sku}}" href="javascript:void(0)">
+                      Click & Collect
+                      </a> 
+                      <div class="selectedcnc"></div>
+                    </div>
+                    <div class="button-entry">
+                      {% if section.settings.enable_payment_button %}
+                      {{ form | payment_button }}
+                      {% endif %}
+                      <div id="stockinstore-wrapper-stop"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-delivery">{{ 'products.general.delivery' | t }}</div>
+
+                {% include 'product-badge' %}
+                
+              </div>
+          
+              {% if product.variants.size == 1 %}
+              {% if product.variants.first.inventory_management == 'shopify' and product.variants.first.inventory_quantity < 1 %}
+              <div class="backorder">
+                <p><span class="selected-variant">{{ product.title }}</span> {{ 'products.product.backorder' | t }}</p>
+              </div>
+              {% endif %}
+              {% else %}
+              <div class="backorder hidden">
+                <p><span class="selected-variant"></span> {{ 'products.product.backorder' | t }}</p>
+              </div>
+              {% endif %}
+            {% endform %}
+        </div>
+            <div class="product__sticky">
+              <div class="product__sticky-img-wrap">
+                <img src="{{ product.featured_image | img_url: '300x' }}" alt="{{ product.title }}" class="product__img">
+              </div>
+              <div class="product__sticky-info">
+                {% assign introductory_offer = false %}
+                {% for tag in product.tags %}
+                  {% if tag contains 'introductory_offer' %}
+                    {% assign introductory_offer = true %}
+                  {% endif %}
+                {% endfor %}
+                {% if introductory_offer == true %}
+                  <div class="product__sticky-price" style="color: #979797">
+                    <span>Now</span> {{ product.price | money }}
+                  </div>
+                {% else %}
+                  {% if product.compare_at_price > product.price %}
+                    <div class="product__sticky-compare">
+                      Was {{ product.compare_at_price | money }}
+                    </div>
+                  {% endif %}
+                  <div class="product__sticky-price" {% unless product.compare_at_price > product.price %}style="color: #979797"{% endunless %}>
+                    {% if product.compare_at_price > product.price %}<span>Now</span>{% endif %} {{ product.price | money }}
+                  </div>
+                {% endif %}
+              </div>
+              <div>
+                <button class="product__sticky-btn">{{ 'products.product.add_to_cart_html' | t }}</button>
+                <div class="product__sticky-delivery">
+                  3-10 day delivery Australia-wide
+                </div>
+              </div>
+
+            </div>
+          {% else %}
+            <div class="product-description-test">
+              {% include 'product-description' %}
+            </div>
+            <div class="product-attributes-test">
+              {% include 'product-attributes' %}
+            </div>
+            <div class="pdp-button-wrapper">
+              <div class="pdp-button-box">
+                <div class="button-entry">
+                  <div id="stockinstore-wrapper-stop">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="product__sticky product__sticky--unavailable">
+              <div class="product__sticky-info">
+                {% assign introductory_offer = false %}
+                {% for tag in product.tags %}
+                  {% if tag contains 'introductory_offer' %}
+                    {% assign introductory_offer = true %}
+                  {% endif %}
+                {% endfor %}
+                {% if introductory_offer == true %}
+                  <div class="product__sticky-price" style="color: #979797">
+                    <span>Now</span> {{ product.price | money }}
+                  </div>
+                {% else %}
+                  {% if product.compare_at_price > product.price %}
+                    <div class="product__sticky-compare">
+                      Was {{ product.compare_at_price | money }}
+                    </div>
+                  {% endif %}
+                  <div class="product__sticky-price" {% unless product.compare_at_price > product.price %}style="color: #979797"{% endunless %}>
+                    {% if product.compare_at_price > product.price %}<span>Now</span>{% endif %} {{ product.price | money }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+          {% endif %}
+
+        {% else %}
+            {% unless coming == true %}
+        		{% if inStore == true %}
+        			<div class="rte space-below">
+                      <div class="product-unavailable-text"><p>INSTORE ONLY</p></div>
+                    </div>
+        		{% else %}
+        			<div class="rte space-below">
+                      <div class="product-unavailable-text">{{ 'products.product.product_unavailable_html' | t }}</div>
+                    </div>  
+        		{% endif %}
+                    
+          	{% endunless %}
+        
+        
+          <div class="product-description-test">
+            {% include 'product-description' %}
+          </div>
+          <div class="product-attributes-test">
+            {% include 'product-attributes' %}
+          </div>
+        	
+          <div class="pdp-button-wrapper">
+            <div class="pdp-button-box">
+              <div class="button-entry pdpfindinstore" style="display:none;">
+                <a id="pdpcncpopup" class="btn" onClick="BEVDCNC.clickandcollect.pdppopupfindinstore()" data-product="{{ product.id }}" data-variant="{{ product.selected_or_first_available_variant.id }}" data-producttitle="{{product.title}}" data-productsku="{{product.selected_or_first_available_variant.sku}}" href="javascript:void(0)">
+                  Find in Store
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if template contains 'lightbox' %}
+      <div class="more-link-box">
+        <a class="more-link" href="{{ product.url | within: collection }}">{{ 'products.general.full_details' | t }}</a>
+      </div>
+
+      {% else %}
+		
+        {% if section.settings.description_location != 'under' %}
+          {% include 'product-description',description_type:"long" %}
+        {% endif %}
+        {% include 'product-attributes' %}
+
+        {% include 'product-tabs' %}
+
+        {% include 'sharing' with product %}
+
+      {% endif %}      
+      
+      <div id="preezie-product-blurb"></div>
+      <script type="text/javascript">
+        PREEZIE_PRODUCT_SCORE.render([
+          {
+            blurbKey: '0f477e0e-b135-4026-a47e-08d829e7ee8d',
+            renderTo: 'preezie-product-blurb'
+          }
+        ]);
+      </script>
+    </div>
+    <!-- end product form and details -->
+  </div>
+
+  {% unless template contains 'lightbox' %}
+
+  {% if section.settings.description_location == 'under' %}
+    {% include 'product-description' %}
+  {% endif %}
+
+  
+  {% if product.metafields.bevillesnew.pro_compliment and product.metafields.bevillesnew.pro_compliment != blank %}
+  
+  {% assign proComplimentContent = '' %}
+  <div class="compliment_block hide_on_desktop">
+    {% assign complimenting_products = product.metafields.bevillesnew.pro_compliment | split: "|" %}
+    {% for compliment_handle in complimenting_products %}
+    {% assign compliment_product = all_products[compliment_handle] %}
+    {% comment %}<a class="" href="{{ compliment_handle }}" title="{{ compliment_product.title }}">
+      <img src="{{ all_products[compliment_handle].featured_image | img_url: '200x200' }}" alt="{{ all_products[compliment_handle].title | escape }}" >
+    </a>{% endcomment %}
+    {% if compliment_product.available and compliment_product.available != blank %}
+    
+    {% assign img_src = compliment_product.featured_image | img_url: "200x200"  %}
+    {% assign proComplimentContent = proComplimentContent| append: '<a class="" href="' | append:compliment_handle | append:'"title="' | append:compliment_product.title | append: '"><img onerror="this.src=' | append:"'https://cdn.shopify.com/shopifycloud/shopify/assets/no-image-50-3d8cc48bd078edcd544c8d60f929ed2d8800a3fc52e0f602e84b1767e392bfcd_2048x.gif'"| append:';" src='| append:img_src | append: '/></a>'| append: '|&' %}
+     {% endif %}
+    {% endfor %}
+    {% assign proComplimentContent = proComplimentContent | split: '|&' %}
+  			{% if proComplimentContent.size > 0 %}
+          	<div class="title"><h4>Matching Product</h4></div>
+    		<div class="matching_products_content">
+            	{{ proComplimentContent }}
+    		</div>
+            {% endif %}
+  </div>
+  {% endif %}
+  
+  <div class="theme-product-reviews-full1">
+    {% include 'reviewsio' %}
+  </div>
+  
+  {% if collection %}
+  <div class="links-row mobile section border-top small-hide">
+    <a class="back-link" href="{{ collection.url }}" title="{{ collection.title | escape }}">
+      {% include 'svg-chevron-left' %} <span class="beside-svg standard-link">{{ collection.title }}</span>
+    </a>
+
+    {% if collection.previous_product %}
+    <a class="standard-link" href="{{ collection.previous_product }}">{{ 'products.product.previous' | t }}</a>
+    {% if collection.next_product %} <span class="divider">/</span> {% endif %}
+    {% endif %}
+
+    {% if collection.next_product %}
+    <a class="standard-link" href="{{ collection.next_product }}">{{ 'products.product.next' | t }}</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% endunless %}
+</div>
+
+{% capture recommendedProductHandles %}
+  {% for value in product.metafields.bevilles.recommendedProducts %}
+    {{ value }}{% if forloop.index < product.metafields.bevilles.recommendedProducts.size %}, {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% if product.metafields.bevilles.recommendedProducts != nil  %}
+  {% assign customRecommendedItems = true %}
+{% else %}
+  {% assign customRecommendedItems = false %}
+  {% assign recommendedCollectionHandle = product.metafields.bevilles.recommendedCollection %}
+{% endif %}
+
+{% if section.settings.show_recommend %}
+  {% include 'recommended-products', recommendedProductHandles, customRecommendedItems, recommendedCollectionHandle, collection.title %}
+{% endif %}
+
+{% unless template contains 'lightbox' %}
+  {% if section.settings.show_related_products %}
+    {% include 'related-products' %}
+  {% endif %}
+  {% if section.settings.show_recently_viewed_products %}
+    {% include 'recently-viewed-products' %}
+  {% endif %}
+<!-- <script src="https://libraries.unbxdapi.com/recs-sdk/v2.1.0/unbxd_recs_template_sdk_anz.js"></script>
+<div class="horizontal-section">
+  		<div id="widget1"> </div>
+  		<div id="widget2"> </div>
+  
+</div> -->
+
+<script type="text/javascript">
+//   _unbxd_getRecommendations({
+//             widgets: {
+//                 widget1: {
+//                     name: "widget1"
+//                 },
+//               	widget2: {
+//                     name: "widget2"
+//                 }
+//             },
+//             userInfo: {
+//                 userId: 'uidValue',
+//                 siteKey: window.UnbxdSiteName,
+// 				apiKey: window.UnbxdApiKey,
+//             },
+//             pageInfo: {
+//               productIds : ['{{product.id}}'],
+//                 pageType: 'PRODUCT',
+//             },
+//             itemClickHandler: function (product) {
+//                 window.location = window.location.origin + (product.productUrl);
+//                 //do what you want to do with product that has been clicked here
+//                 //alert(JSON.stringify(product));
+//             },
+//              dataParser: function (templateData) {
+//             return templateData;
+//             }
+//     });
+</script>
+{% endunless %}
+<div id="login_popup" class="login_popup" style="display:none;">
+  <h3>Login</h3>
+  {% form 'customer_login' %}
+  {{ form.errors | default_errors }}
+  <input type="hidden" name="return_to" value="/products/{{ product.handle }}">
+  <input type="hidden" name="form_type" value="customer_login">
+  <input type="hidden" name="utf8" value="✓">
+  <div class="input-row">                        
+    <input type="email" value="" name="customer[email]" id="customer_email" class="text" placeholder="Email">
+  </div>
+  <div class="input-row">
+    <input type="password" value="" name="customer[password]" id="customer_password" class="text" size="16" placeholder="Password">
+  </div>
+  <div class="input-row">
+    <input class="btn" type="submit" value="Sign in">
+  </div>
+  <a class="standard-link register-link" href="/account/register">Not a member yet? Sign up</a>
+  {% endform %}
+</div>
+
+{% assign cart_total = product.price | divided_by: 100 %}
+{% assign spend_value = settings.spend_value | plus: 0  %}
+{% assign spend_value1 = settings.spend_value1 | plus: 0  %}
+{% assign spend_value2 = settings.spend_value2 | plus: 0  %}
+{% assign upsell_product = all_products[settings.product] %}
+{% assign product1 = all_products[settings.product1] %}
+{% assign product2 = all_products[settings.product2] %}
+{% assign product_id = upsell_product.id %}
+{% assign product_id1 = product1.id %}
+{% assign product_id2 = product2.id %}
+
+{% assign showupsellproduct = true %}
+{% for collection in product.collections %}
+{% assign product_collection = collection.handle %}
+{% if product_collection == 'watches' or product_collection == 'bevilles-gift-card'%}
+{% assign showupsellproduct = false %}
+{% endif %}
+{% endfor %}
+
+<div class="upsell_slider_popup" style="display: none;">
+  	<div class="upsell-section-slider1">
+      
+      {% if settings.show_upsell2 != blank  and showupsellproduct == true %}
+        {% if hide_btn2 != true %}
+          {% if cart_total >= spend_value2 %}
+            <section class="upsell-section upsell-cart">
+              <div class="container">
+                <div class="upsell-content-wrapper">
+                <div class="custom-text">
+                  {{ settings.custom_text2 }}
+                </div>
+                <div class="row">
+                  {% if product2 != blank %}
+                  {% assign variant = product2.selected_or_first_available_variant %}
+                  {% assign featured_image = product2.selected_or_first_available_variant.featured_image | default: product2.featured_image %}
+                  <div class="product-gallery half column">
+                    <a class="main-img-link" href="{{ product2.url }}" title="{{ product2.title | escape }}">
+                      <img src="{{ product2.featured_image | product_img_url: 'large' }}" alt="{{ product2.title | escape }}">
+                    </a>
+                  </div>
+                  <!-- end gallery -->
+                  <!-- begin product form and details -->
+                  <div class="half column product-details">
+                    <div class="product-section padless-top cf product-title-row">
+                      <h1 class="product-title" itemprop="name">{{ product2.title | link_to: product2.url }}</h1>
+                      <div id="price" class="product-price">
+                        {% if settings.discount2 != blank %}
+                          
+                          {% if product2.selected_or_first_available_variant.compare_at_price > product2.selected_or_first_available_variant.price %}
+                            <span class="was-price theme-money">{{ product2.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% else %}
+                        	<span class="was-price theme-money">{{ product2.selected_or_first_available_variant.price | money }}</span>
+                          {% endif %}
+
+                            {% assign price_without_zero = product2.selected_or_first_available_variant.price | divided_by: 100 %}
+                            {% assign tot_dis_ = settings.discount2 | minus: 0 %}
+                            <span>${{tot_dis_ | append: ""}}</span>
+                        {% else %}
+                          <span class="current-price theme-money">{{ product2.selected_or_first_available_variant.price | money }}</span>
+                        {% if product2.selected_or_first_available_variant.compare_at_price > product2.selected_or_first_available_variant.price %}
+                          <span class="was-price theme-money">{{ product2.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="product-section">
+                      {% if product2.available %}
+                        {% form 'product', product, class: 'product-form noAJAX', data-product-id: product2.id %}
+                          {% if product2.variants.size > 1 %}
+                          <div class="option-selectors" data-box-options="">
+                            {% for option in product2.options_with_values %}
+                            <div class="selector-wrapper cf">
+                              <label {% if option.name == 'default' %}class="hidden"{% endif %} for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                              <select id="option-{{ option.name | handle }}">
+                                {% for value in option.values %}
+                                <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>
+                                  {{ value }}
+                                </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            {% endfor %}
+                          </div>
+                          <select name="id" class="original-selector">
+                            {% for variant in product2.variants %}
+                            <option value="{{ variant.id }}" {% if variant == product2.selected_or_first_available_variant %} selected="selected"{% endif %} data-stock="{% if variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0 %}out{% endif %}">{{ variant.title | escape }}</option>
+                            {% endfor %}
+                          </select>
+                          {% else %}
+                          {% unless show_single_variant_details == false or product2.has_only_default_variant %}
+                          {%- assign opt_idx = '' -%}
+                          {%- capture option_list -%}
+                          {%- for option in product2.options -%}
+                          {%- if option != 'Title' -%}
+                          {%- assign opt_idx = 'option' | append: forloop.index -%}
+                          {{ option }}: {{ product2.variants.first[opt_idx] }}<br/>
+                          {%- endif -%}
+                          {%- endfor -%}
+                          {%- endcapture -%}
+                          {%- if opt_idx != blank -%}
+                          <div class="selector-wrapper single-option">{{ option_list }}</div>
+                          {%- endif -%}
+                          {% endunless %}
+                          <input type="hidden" name="id" value="{{ product2.selected_or_first_available_variant.id }}" />
+                          {% endif %}
+
+                          <div class="">
+                            <input type="hidden" name="quantity" value="1" />
+                            <span class="">
+                              <button type="submit" name="add" id="add" class="btn">{{ 'products.product.add_to_cart_html' | t }}</button>
+                            </span>
+                          </div>
+                        {% endform %}
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- end product form and details -->
+                  {% endif %}      
+                </div>
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      {% if settings.show_upsell != blank %}
+        {% if hide_btn != true %}
+          {% if cart_total >= spend_value %}
+            <section class="upsell-section upsell-cart">
+              <div class="container">
+                <div class="upsell-content-wrapper">
+                <div class="custom-text">
+                  {{ settings.custom_text }}
+                </div>
+                <div class="row">
+                  {% if upsell_product != blank %}
+                  {% assign variant = upsell_product.selected_or_first_available_variant %}
+                  {% assign featured_image = upsell_product.selected_or_first_available_variant.featured_image | default: upsell_product.featured_image %}
+                  <div class="product-gallery half column">
+                    <a class="main-img-link" href="{{ upsell_product.url }}" title="{{ upsell_product.title | escape }}">
+                      <img src="{{ upsell_product.featured_image | product_img_url: 'large' }}" alt="{{ upsell_product.title | escape }}">
+                    </a>
+                  </div>
+                  <!-- end gallery -->
+                  <!-- begin product form and details -->
+                  <div class="half column product-details">
+                    <div class="product-section padless-top cf product-title-row">
+                      <h1 class="product-title" itemprop="name">{{ upsell_product.title | link_to: upsell_product.url }}</h1>
+                      <div id="price" class="product-price">
+                        {% if settings.discount != blank %}                         
+                        
+                            {% assign price_without_zero = upsell_product.selected_or_first_available_variant.price | divided_by: 100 %}
+                            {% assign tot_dis1_ = price_without_zero | minus: settings.discount %}
+                            {% assign tot_dis_ =  settings.discount %}
+                            <span>${{tot_dis_ | append: ""}}</span>
+                          {% if upsell_product.selected_or_first_available_variant.compare_at_price > upsell_product.selected_or_first_available_variant.price %}
+                            <span class="was-price theme-money">{{ upsell_product.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% else %}
+                        	<span class="was-price theme-money">{{ upsell_product.selected_or_first_available_variant.price | money }}</span>
+                          {% endif %}
+                        {% else %}{% if upsell_product.selected_or_first_available_variant.compare_at_price > upsell_product.selected_or_first_available_variant.price %}
+                          <span class="was-price theme-money">{{ upsell_product.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% endif %}
+                          <span class="current-price theme-money">{{ upsell_product.selected_or_first_available_variant.price | money }}</span>
+                          
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="product-section">
+                      {% if upsell_product.available %}
+                        {% form 'product', product, class: 'product-form noAJAX', data-product-id: upsell_product.id %}
+                          {% if upsell_product.variants.size > 1 %}
+                          <div class="option-selectors" data-box-options="">
+                            {% for option in upsell_product.options_with_values %}
+                            <div class="selector-wrapper cf">
+                              <label {% if option.name == 'default' %}class="hidden"{% endif %} for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                              <select id="option-{{ option.name | handle }}">
+                                {% for value in option.values %}
+                                <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>
+                                  {{ value }}
+                                </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            {% endfor %}
+                          </div>
+                          <select name="id" class="original-selector">
+                            {% for variant in upsell_product.variants %}
+                            <option value="{{ variant.id }}" {% if variant == upsell_product.selected_or_first_available_variant %} selected="selected"{% endif %} data-stock="{% if variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0 %}out{% endif %}">{{ variant.title | escape }}</option>
+                            {% endfor %}
+                          </select>
+                          {% else %}
+                          {% unless show_single_variant_details == false or upsell_product.has_only_default_variant %}
+                          {%- assign opt_idx = '' -%}
+                          {%- capture option_list -%}
+                          {%- for option in upsell_product.options -%}
+                          {%- if option != 'Title' -%}
+                          {%- assign opt_idx = 'option' | append: forloop.index -%}
+                          {{ option }}: {{ upsell_product.variants.first[opt_idx] }}<br/>
+                          {%- endif -%}
+                          {%- endfor -%}
+                          {%- endcapture -%}
+                          {%- if opt_idx != blank -%}
+                          <div class="selector-wrapper single-option">{{ option_list }}</div>
+                          {%- endif -%}
+                          {% endunless %}
+                          <input type="hidden" name="id" value="{{ upsell_product.selected_or_first_available_variant.id }}" />
+                          {% endif %}
+
+                          <div class="">
+                            <input type="hidden" name="quantity" value="1" />
+                            <span class="">
+                              <button type="submit" name="add" id="add" class="btn">{{ 'products.product.add_to_cart_html' | t }}</button>
+                            </span>
+                          </div>
+                        {% endform %}
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- end product form and details -->
+                  {% endif %}      
+                </div>
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    
+      {% if settings.show_upsell1 != blank %}
+        {% if hide_btn1 != true %}
+          {% if cart_total >= spend_value1 %}
+            <section class="upsell-section upsell-cart">
+              <div class="container">
+                <div class="upsell-content-wrapper">
+                <div class="custom-text">
+                  {{ settings.custom_text1 }}
+                </div>
+                <div class="row">
+                  {% if product1 != blank %}
+                  {% assign variant = product1.selected_or_first_available_variant %}
+                  {% assign featured_image = product1.selected_or_first_available_variant.featured_image | default: product1.featured_image %}
+                  <div class="product-gallery half column">
+                    <a class="main-img-link" href="{{ product1.url }}" title="{{ product1.title | escape }}">
+                      <img src="{{ product1.featured_image | product_img_url: 'large' }}" alt="{{ product1.title | escape }}">
+                    </a>
+                  </div>
+                  <!-- end gallery -->
+                  <!-- begin product form and details -->
+                  <div class="half column product-details">
+                    <div class="product-section padless-top cf product-title-row">
+                      <h1 class="product-title" itemprop="name">{{ product1.title | link_to: product1.url }}</h1>
+                      
+                      
+                      
+                      <div id="price" class="product-price">
+                        {% if settings.discount1 != blank %}
+                          {% assign price_without_zero = product1.selected_or_first_available_variant.price | divided_by: 100 %}
+                            {% assign tot_dis_ = settings.discount1 | minus: 0 %}
+                            <span>${{tot_dis_ | append: ""}}</span>
+                          {% if product1.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                            <span class="was-price theme-money">{{ product1.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% else %}
+                        	<span class="was-price theme-money">{{ product1.selected_or_first_available_variant.price | money }}</span>
+                          {% endif %}
+                            {% comment %}
+                            {% assign discount_price_ = product.selected_or_first_available_variant.price | times: settings.discount | divided_by: 100 %}
+                            {% assign total_discount_ = product.selected_or_first_available_variant.price | minus: discount_price_ %}
+                            <span>{{ total_discount_ | money }}</span>
+                            {% endcomment %}
+
+                            
+                        {% else %}
+                          <span class="current-price theme-money">{{ product1.selected_or_first_available_variant.price | money }}</span>
+                          {% if product1.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                          <span class="was-price theme-money">{{ product1.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="product-section">
+                      {% if product1.available %}
+                        {% form 'product', product, class: 'product-form noAJAX', data-product-id: product1.id %}
+                          {% if product1.variants.size > 1 %}
+                          <div class="option-selectors" data-box-options="">
+                            {% for option in product1.options_with_values %}
+                            <div class="selector-wrapper cf">
+                              <label {% if option.name == 'default' %}class="hidden"{% endif %} for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                              <select id="option-{{ option.name | handle }}">
+                                {% for value in option.values %}
+                                <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>
+                                  {{ value }}
+                                </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            {% endfor %}
+                          </div>
+                          <select name="id" class="original-selector">
+                            {% for variant in product1.variants %}
+                            <option value="{{ variant.id }}" {% if variant == product1.selected_or_first_available_variant %} selected="selected"{% endif %} data-stock="{% if variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0 %}out{% endif %}">{{ variant.title | escape }}</option>
+                            {% endfor %}
+                          </select>
+                          {% else %}
+                          {% unless show_single_variant_details == false or product1.has_only_default_variant %}
+                          {%- assign opt_idx = '' -%}
+                          {%- capture option_list -%}
+                          {%- for option in product1.options -%}
+                          {%- if option != 'Title' -%}
+                          {%- assign opt_idx = 'option' | append: forloop.index -%}
+                          {{ option }}: {{ product1.variants.first[opt_idx] }}<br/>
+                          {%- endif -%}
+                          {%- endfor -%}
+                          {%- endcapture -%}
+                          {%- if opt_idx != blank -%}
+                          <div class="selector-wrapper single-option">{{ option_list }}</div>
+                          {%- endif -%}
+                          {% endunless %}
+                          <input type="hidden" name="id" value="{{ product1.selected_or_first_available_variant.id }}" />
+                          {% endif %}
+
+                          <div class="">
+                            <input type="hidden" name="quantity" value="1" />
+                            <span class="">
+                              <button type="submit" name="add" id="add" class="btn">{{ 'products.product.add_to_cart_html' | t }}</button>
+                            </span>
+                          </div>
+                        {% endform %}
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- end product form and details -->
+                  {% endif %}      
+                </div>
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      
+    </div>
+</div>
+{% schema %}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "text",
+        "id": "prod_instore",
+        "label": "In Store Product Tag",
+        "default": "in store"
+      },
+      {
+        "type": "checkbox",
+        "id": "prod_show_brand",
+        "label": "Show vendor name",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "prod_show_type",
+        "label": "Show product type",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "prod_show_sku",
+        "label": "Show SKU",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_product_image_zoom",
+        "label": "Enable hover zoom",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "prod_show_quantity_input",
+        "label": "Show quantity box",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "prod_clicky_opt_names",
+        "label": "Options to show as boxes",
+        "info": "Separate with commas, no spaces. E.g. Size,Color"
+      },
+      {
+        "type": "select",
+        "id": "description_location",
+        "label": "Product description location",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "In right hand column"
+          },
+          {
+            "value": "under",
+            "label": "Full page width"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_payment_button",
+        "label": "Show dynamic checkout button",
+        "info": "Each customer will see their preferred payment method from those available on your store, such as PayPal or Apple Pay. [Learn more](https://help.shopify.com/manual/using-themes/change-the-layout/dynamic-checkout)",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Size chart"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_size_chart",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "size_chart_label",
+        "label": "Size chart label"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_variant",
+        "label": "Variant name",
+        "default": "Size"
+      },
+      {
+        "type": "page",
+        "id": "size_chart_page",
+        "label": "Page containing size chart"
+      },
+      {
+        "type": "header",
+        "content": "In Store Button"
+      },
+      {
+        "type": "text",
+        "id": "in_store_label",
+        "label": "Label",
+        "info": "In Store Button will only appear if product has 'In Store' tag. "
+      },
+      {
+        "type": "checkbox",
+        "id": "in_store_icon",
+        "label": "Show map icon before 'Find In Store' Label"
+      },
+      {
+        "type": "header",
+        "content": "Logos and Certifications",
+        "info": "Maximum logo container is 155px. You can upload images greater than 155px wide but logo container will scale down to 155px wide."
+      },
+      {
+        "type": "image_picker",
+        "id": "certification_logo1",
+        "label": "Logo 1"
+      },
+      {
+        "type": "image_picker",
+        "id": "certification_logo2",
+        "label": "Logo 2"
+      },
+	  {
+        "type": "image_picker",
+        "id": "certification_logo3",
+        "label": "Logo 3"
+      },
+      {
+        "type": "header",
+        "content": "Recommended products"
+      },
+      {
+        "type": "text",
+        "id": "recommend_title",
+        "label": "Recommended products title",
+        "default": "Recommended Products"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_recommend",
+        "label": "Show",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Related products"
+      },
+      {
+        "type": "paragraph",
+        "content": "Show other products from the same collection, underneath the product details"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_related_products",
+        "label": "Show",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "products_per_row",
+        "label": "Maximum number of products per row",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          }
+        ],
+        "default": "4"
+      },
+
+      {
+        "type": "header",
+        "content": "Recently Viewed Products"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_recently_viewed_products",
+        "label": "Show",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "recently_viewed_title",
+        "label": "Recently Viewed Products title",
+        "default": "Recently Viewed Products"
+      }
+
+
+    ],
+    "blocks": [
+      {
+        "type": "productTab",
+        "name": "Product Tab",
+        "settings": [
+          {
+            "id": "product_tab_title",
+            "type": "text",
+            "label": "Product Tab Title"
+          },
+          {
+            "id": "product_tab_page",
+            "type": "page",
+            "label": "Page"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

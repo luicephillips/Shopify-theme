@@ -1,0 +1,442 @@
+{% assign products_per_page = 24 %}
+{% if section.settings.pagination_limit_int %}
+  {% assign products_per_page = section.settings.pagination_limit_int %}
+{% elsif section.settings.pagination_limit %}
+  {% assign products_per_page = section.settings.pagination_limit %}
+{% endif %}
+
+<div class="togetcollectionid" data-section-type="collection-template" data-collection-id="{{collection.id}}">
+  {% paginate collection.products by products_per_page %}
+  {% comment %}
+  <div class="container">    
+    <div class="inline-row cf">
+      <!-- Begin breadcrumbs -->
+      <div class="breadcrumbs inline-item left">
+        <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="{{ shop.url }}" title="{{ shop.name | escape }}" itemprop="url"><span itemprop="title">{{ 'general.breadcrumbs.home' | t }}</span></a></span>
+        <span class="divider">{{ 'general.breadcrumbs.divider_html' | t }}</span>
+        <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="{{ collection.url }}" title="{{ collection.title | escape }}" itemprop="url"><span itemprop="title">{{ collection.title }}</span></a></span>
+
+        {% if current_tags %}
+        {% for tag in current_tags %}
+        <span class="divider">{{ 'general.breadcrumbs.divider_html' | t }}</span>
+        <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/collections/{% if collection.handle != blank %}{{ collection.handle }}{% else %}all{% endif %}/{{ tag | handleize }}" title="{{ tag | escape }}" itemprop="url"><span itemprop="title">{{ tag }}</span></a></span>
+        {% endfor %}
+        {% endif %}
+
+        {% if paginate.pages != 0 %}
+        <span class="divider">{{ 'general.breadcrumbs.divider_html' | t }}</span> <strong>{{ 'general.pagination.summary' | t: current_page: paginate.current_page, pages: paginate.pages }}</strong>
+        {% endif %}
+      </div>
+      <!-- End breadcrumbs -->
+
+      <div class="inline-item right last">
+        {% include 'sharing' with collection %}
+      </div>
+    </div>
+  </div>
+  {% endcomment %}
+  {% if section.settings.header_mode == 'fullw-image' and collection.image %}
+  <div class="fullwidth-image">
+    <img src="{{ collection.image | img_url: '2048x' }}" alt="{{ collection.name | escape }}"
+         srcset="{{ collection.image | img_url: '600x' }} 600w,
+                 {{ collection.image | img_url: '800x' }} 800w,
+                 {{ collection.image | img_url: '1024x' }} 1024w,
+                 {{ collection.image | img_url: '2048x' }} 2048w"
+         sizes="100vw" />
+  </div>
+  {% endif %}
+  {% if section.settings.header_position == 'top' %}
+  {% include 'collection-header', section.blocks  %}
+  {% endif %}
+  <div class="container">
+    {% if section.settings.header_mode == blank and collection.image %}
+    <div class="fullwidth-image">
+      <img src="{{ collection.image | img_url: '2048x' }}" alt="{{ collection.name | escape }}"
+           srcset="{{ collection.image | img_url: '600x' }} 600w,
+                   {{ collection.image | img_url: '800x' }} 800w,
+                   {{ collection.image | img_url: '1024x' }} 1024w,
+                   {{ collection.image | img_url: '2048x' }} 2048w"
+           sizes="100vw" />
+    </div>
+    {% endif %}
+
+    <div id="preezie-widget-div-id"></div> <script type="text/javascript">
+    if (document.getElementById('preezie-id') != null) {
+      	var guideId =document.getElementById("preezie-id").value; 
+    	if(guideId){ PREEZIE_GUIDE.render([ { guideKey: guideId, version: '1.0.0', renderTo: 'preezie-widget-div-id' } ]); }
+    }
+    
+    </script>
+
+
+    <div id="collection" class="show-sidebar">
+      <div class="inline-row pagingBoxTop">
+        <div class="inline-item right last">
+          <span class="results-count desktop"></span>
+          <span id="bc-sf-filter-top-display-type"></span>
+
+          <span id="bc-sf-filter-tree-mobile">
+            {% include 'bc-sf-filter-skeleton', type: 'button' %}
+          </span>
+
+          {% if section.settings.collection_sort %}
+          <span id="bc-sf-filter-top-sorting" class="filter">
+
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="sidebar-cont cf collSidebar">
+
+        <div class="sidebar">
+
+          {% if collection.metafields.collection.side_menu %}
+          <div class="catMenuBox showDesktop showDesktopTablet">
+            {% if collection.metafields.collection.side_menu_title %}
+            <h2 class="h4">{{ collection.metafields.collection.side_menu_title }}</h2>
+            {% endif %}
+            <div class="catMenu">
+              <ul>
+                {%- for link in linklists[collection.metafields.collection.side_menu].links %}
+                  <li>{{ link.title | link_to: link.url }}</li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </div>
+          {% endif %}
+
+
+
+          <div class="filterBlock">
+            <span class="filterCloser showMobile"><i class="fas fa-times"></i></span>
+            <h2 class="h4 showDesktop showDesktopTablet">{{ 'collections.sidebar.filter_by' | t }}:</h2>
+
+            <div id="bc-sf-filter-tree">
+              <div class="filterCloser showMobile"><i class="fas fa-times"></i></div>
+              {% include 'bc-sf-filter-tree-placeholder' %}
+            </div>
+          </div>
+        </div>
+
+        <div class="beside-sidebar">
+          <div id="bc-sf-filter-products" class="product-list thisis row grid {% if section.settings.coll_infiniscroll %}use-infinite-scroll{% endif %}" data-normheights=".image" data-normheights-inner="img" data-bc-sort="{{ collection.default_sort_by }}">
+            {% for product in collection.products %}
+            {%- include 'bold-product' with product, hide_action: 'skip' -%}
+            {% include 'product-block' %}
+            {% endfor %}
+          </div>
+          <div class="border-top pagingBoxBottom">
+            <div class="container">
+              <div class="inline-row cf">
+                <p class="inline-item left results-count-box"><span class="results-count"></span></p>
+                <div class="inline-item right last paginationBox">
+                  <ul id="bc-sf-filter-bottom-pagination" class="pagination"></ul>
+                  <div id="bc-sf-filter-load-more"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% assign collectionDescription2 = collection.metafields.collection.secondary_description
+ | strip_html | strip_newlines | strip  %}
+  {% if collectionDescription2.size > 0  %}
+  <div class="container">
+     <div  class="rte collectionDescription2">
+        {% capture collectionDescription2 %}{{ collection.metafields.collection.secondary_description }}{% endcapture %}
+          {% if collectionDescription2 contains '</p>' %}
+            {{ collectionDescription2 }}
+          {% else  %}
+            <p>{{ collectionDescription2 }}</p>
+          {% endif %}
+      </div>
+
+  </div>
+{% endif %}
+
+
+
+
+
+
+
+  {% endpaginate %}
+</div>
+{% for block in section.blocks %}
+   {% if block.settings.collection_name != blank and block.settings.collection_name == collection.handle %}
+ 	{% assign banner_bg_cl = block.settings.collection_bg_color %}
+	{% assign banner_text_cl = block.settings.collection_text_color %}
+{% break %}
+{% else %}
+{% assign banner_bg_cl = section.settings.banner_bg_color %}
+{% assign banner_text_cl = section.settings.banner_text_color %}
+	{% endif %}
+{% endfor %}
+<script>
+  // Declare bcSfFilterConfig variable
+  var bcSfFilterConfig = {
+    label: {
+      sorting: {% assign temp = 'collections.sorting.title' | t  %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Sorting" {% endunless %},
+      sorting_best_selling: {% assign temp = 'collections.sorting.best_selling' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Best Selling" {% endunless %},
+      sorting_featured: {% assign temp = 'collections.sorting.featured' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Featured" {% endunless %},
+      sorting_title_ascending: {% assign temp = 'collections.sorting.az' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Alphabetically, A-Z" {% endunless %},
+      sorting_title_descending: {% assign temp = 'collections.sorting.za' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Alphabetically, Z-A" {% endunless %},
+      sorting_price_ascending: {% assign temp = 'collections.sorting.price_ascending' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Lowest Price" {% endunless %},
+      sorting_price_descending: {% assign temp = 'collections.sorting.price_descending' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Highest Price" {% endunless %},
+      sorting_date_ascending: {% assign temp = 'collections.sorting.date_ascending' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Date, Old to New" {% endunless %},
+      sorting_date_descending: {% assign temp = 'collections.sorting.date_descending' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Date, New to Old" {% endunless %},
+      sorting_sale_descending: {% assign temp = 'collections.sorting.sale_descending' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "% Off" {% endunless %},
+      sorting_relevance: {% assign temp = 'collections.sorting.relevance' | t %} {% unless temp contains 'translation missing'  %} {{ temp | json }} {% else %} "Relevance" {% endunless %},
+
+      quick_view: {{ 'products.general.quick_buy_html' | t | json }},
+      add_cart: {{ 'products.product.add_to_cart_html' | t | json }},
+      sale: {{ 'products.labels.sale' | t | json }},
+      soldout: {{ 'products.labels.sold_out' | t | json }},
+      from_price: {{ 'products.general.from' | t | json }},
+      products_count: {{ 'collections.general.results' | t | json }},
+      only_x_left: {{ 'products.labels.only_x_left' | t | json }},
+    },
+    custom: {
+      products_per_page: {% if settings.products_per_page %} {{ settings.products_per_page | json }} {% else %} 12 {% endif %},
+      products_per_row: {% if section.settings.products_per_row %} {{ section.settings.products_per_row }} {% else %} 3 {% endif %},
+      label_soldout_enable: {% if settings.label_soldout_show %} {{ settings.label_soldout_show | json }} {% else %} false {% endif %},
+      prod_quick_buy_show: {% if settings.prod_quick_buy_show %} {{ settings.prod_quick_buy_show | json }} {% else %} false {% endif %},
+      prod_quick_buy_pos: {% if settings.prod_quick_buy_pos %} {{ settings.prod_quick_buy_pos | json }} {% else %} "middle" {% endif %},
+      label_sale_enable: {% if settings.label_sale_show %} {{ settings.label_sale_show | json }} {% else %} false {% endif %},
+      label_remain_show: {% if settings.label_remain_show %} {{ settings.label_remain_show | json}} {% else %} false {% endif %},
+      prod_stock_warn_limit: {% if settings.prod_stock_warn_limit_int != blank %} {{ settings.prod_stock_warn_limit_int }} {% elsif settings.prod_stock_warn_limit != blank %} {{ settings.prod_stock_warn_limit }} {% else %} 10 {% endif %},
+      block_layout: {% if settings.prod_block_layout %} {{settings.prod_block_layout | json }} {% else %} 'beside' {% endif %},
+    }
+  };
+  
+  jQuery(document).ready(function(){
+    if (window.location.href.indexOf("christmas-sale?_") > -1) {
+      jQuery('html, body').animate({ scrollTop: jQuery('#collection').offset().top - 120}, 1000);
+    }
+  });
+</script>
+{% schema %}
+
+  {
+    "name": "Collection pages",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Heading"
+      },
+      {
+        "type": "select",
+        "id": "header_position",
+        "label": "Collection Header Position",
+        "options": [
+          {
+            "value": "top",
+            "label": "Top"
+          },
+          {
+            "value": "bottom",
+            "label": "Bottom"
+          }
+        ],
+        "default": "top"
+      },
+
+      {
+        "type": "select",
+        "id": "header_mode",
+        "label": "Style",
+        "options": [
+          {
+            "value": "",
+            "label": "Banner fit"
+          },
+          {
+            "value": "fullw-image",
+            "label": "Banner wide"
+          },
+          {
+            "value": "text-only",
+            "label": "No image"
+          },
+          {
+            "value": "coloured-split",
+            "label": "Color background"
+          }
+        ],
+        "default": "coloured-split",
+        "info": "[Learn more](https://cleanthemes.co.uk/pages/support-canopy#setting-collection-page)"
+      },
+	  {
+		"type" : "color",
+		"id": "banner_bg_color",
+        "label": "Background color",
+        "default": "#1e479a"
+	  },
+	  {
+		"type" : "color",
+		"id": "banner_text_color",
+        "label": "Banner Text color",
+        "default": "#ffffff"
+	  },
+      {
+        "type": "header",
+        "content": "Sidebar"
+      },
+      {
+        "type": "checkbox",
+        "id": "sidebar_show",
+        "label": "Show sidebar",
+        "default": false
+      },
+      {
+        "type": "link_list",
+        "id": "sidebar_linklist",
+        "label": "Menu to use"
+      },
+      {
+        "type": "page",
+        "id": "sidebar_page",
+        "label": "Page content to show under menu",
+        "info": "Create a page containing images and\/or text to show in your sidebar, a great opportunity to cross-sell and add messages."
+      },
+      {
+        "type": "header",
+        "content": "Filters"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_collection_tags",
+        "label": "Show product tag filter",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "collection_tags",
+        "label": "Filter style",
+        "options": [
+          {
+            "value": "boxes",
+            "label": "Boxes"
+          },
+          {
+            "value": "dropdown",
+            "label": "Dropdown"
+          }
+        ],
+        "default": "dropdown"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort",
+        "label": "Show 'Sort by' dropdown",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort_show_featured",
+        "label": "Show 'featured' in sort by dropdown",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Layout"
+      },
+      {
+        "type": "select",
+        "id": "products_per_row",
+        "label": "Maximum number of products per row",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          }
+        ],
+        "default": "4"
+      },
+      {
+        "type": "range",
+        "id": "pagination_limit_int",
+        "min": 12,
+        "max": 48,
+        "step": 12,
+        "label": "Number of products per page",
+        "default": 36
+      },
+      {
+        "type": "checkbox",
+        "id": "coll_infiniscroll",
+        "label": "Enable infinite-scroll",
+        "info": "Allows the visitor to continue loading more products to the same page without navigating to a new page.",
+        "default": false
+      }
+    ],
+	"blocks": [
+      {
+		"type":"gift_buttons",
+        "name":"Gift Buttons",
+        "settings":[
+          {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button Label"
+          }, 
+          {
+            "type": "url",
+            "id": "button_link",
+            "label": "Button Link"
+          }
+        ]
+      },
+	  {
+		"type":"collection_color",
+        "name":"Collection Background",
+        "settings":[
+          {
+            "type": "text",
+            "id": "collection_name",
+            "label": "Collection Name"
+          }, 
+          {
+            "type" : "color",
+            "id": "collection_bg_color",
+            "label": "Collection Background color",
+            "default": "#1e479a"
+          },
+		  {
+            "type" : "color",
+            "id": "collection_text_color",
+            "label": "Collection Text color",
+            "default": "#ffffff"
+          },
+		  {
+			"type": "image_picker",
+        	"id": "banner_image_desktop",
+        	"label": "Banner Image Desktop"
+		  },
+		  {
+			"type": "image_picker",
+        	"id": "banner_image_mobile",
+        	"label": "Banner Image Mobile"
+		  }
+        ]
+      }
+    ]
+  }
+{% endschema %}

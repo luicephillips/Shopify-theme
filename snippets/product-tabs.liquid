@@ -1,0 +1,33 @@
+<div id="" class="bevs-accordion">
+  {% for block in section.blocks %}
+    {% if block.type == 'productTab' %}
+      <h3 class="acordin-title">
+        {{ block.settings.product_tab_title }}
+        <i class="fa fa-angle-down"></i>
+        <i class="fa fa-angle-up" style="display:none;"></i>
+      </h3>
+      <div style="display:none;" class="acordian-content">
+        {% capture pageHandle %}{{ block.settings.product_tab_page }}{% endcapture %}
+        {{ pages[pageHandle].content }}
+        {% if block.settings.product_tab_title == 'Delivery & Returns' %}
+          {% for collection in product.collections %}
+            {% assign product_collection = collection.handle %}
+            {% if product_collection == 'watches' %}
+              {% for tag in product.tags %}
+                {% if tag == 'FastDelivery' %}
+                  <h6>Fast Dispatch</h6>
+                  <p>FREE delivery on all orders over $100<br>
+                    Express Orders – Your purchase will be dispatched the following business day.<br>
+                    Standard Orders- Your purchase will be dispatched in 1-2 business days.<br>
+                  </p>
+                  <p><strong>Please Note:</strong> There may be a delay in dispatching your order if one or more products is not eligible for Fast Dispatch. Eligible products are identifiable by the fast dispatch icon. We aim to dispatch all orders within 1-2 business days. </p>
+                  <p>During busy sale periods there may be a delay in processing your order due to an increase in order volumes. Orders are not dispatched on weekends or Victorian Public Holidays.</p>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

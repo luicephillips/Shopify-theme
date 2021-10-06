@@ -1,0 +1,42 @@
+{% assign grcap_anchor_page_content = '<span class="grcap_anchor_page">' | append: page.content | append: '</span>' %}
+{% render 'shogun-products', content: page %}
+
+<div class="container">
+  <div class="pageContent {% if page.metafields.bevilles.page_menu %}show-sidebar{% endif %}">
+
+  	<div class="{% if page.metafields.bevilles.page_menu %}sidebar-cont cf{% endif %}">
+  		{% if page.metafields.bevilles.page_menu %}
+  			<div class="sidebar">
+
+	            <div class="catMenuBox showDesktop showDesktopTablet">
+	              <div class="catMenu">
+	                <ul>
+	                {%- for link in linklists[page.metafields.bevilles.page_menu].links %}
+	                  <li class="{% if link.active %} active{% endif %}">{{ link.title | link_to: link.url }}</li>
+	                {%- endfor -%}
+	                </ul>
+	              </div>
+	            </div>  
+	            <div class="catMenuBox selectMenu showMobile">
+	            	<select>
+	            		<option>{{ 'layout.header.menu' | t  }}</option>
+	            		{%- for link in linklists[page.metafields.bevilles.page_menu].links %}
+	                  		<option {% if link.active %}selected="selected"{% endif %} value="{{ link.url }}">{{ link.title }}</option>
+	                {%- endfor -%}
+	            	</select>
+	            </div>	
+  			</div>	
+  		{% endif %}
+  		<div class="{% if page.metafields.bevilles.page_menu %}beside-sidebar{% endif %}">
+          {% if page.metafields.bevilles.page_data_type and page.metafields.bevilles.page_data_type == "location" %}
+          	<a href="/pages/store-locator">All Stores</a>
+          {% endif %}
+	  		<h1 class="page-title">{{ page.title }}</h1>
+	  		<div class="rte page">{{ grcap_anchor_page_content | replace: 'fullwidth"', '" data-fullwidth="true"' }}</div>
+	  	</div>	
+  	</div>	
+  	
+  </div>
+</div>
+
+

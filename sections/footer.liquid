@@ -1,0 +1,392 @@
+<footer id="page-footer" class="page-footer">
+  <div class="container">
+    <a id="back2Top" title="Back to top" href="#">&#10148;</a>
+
+<!--     <div class="back-to-top-row align-centre">
+      <a class="hash-link" href="#page-wrap-content"><span class="beside-svg">{{ 'layout.footer.back_to_top' | t }}</span> {% include 'svg-chevron-up' %}</a>
+    </div>        -->
+   
+    {% if section.settings.footer_complexity == 'columns' %}
+    <div class="row section padless-top">
+      {% if section.settings.show_footer_logo %}
+        <div class="mobile-logo-row column full">
+          {% if section.settings.footer_logo != blank %}
+            {{ section.settings.footer_logo | img_url: '500x' | img_tag | link_to: shop.url }}
+          {% else %}
+            <div class="placeholder-image">{{ 'image' | placeholder_svg_tag }}</div>
+          {% endif%}
+        </div>
+      {% endif %}
+      <div class="text-column column">
+        {% if section.settings.show_footer_logo %}
+          <div class="row">
+            <div class="logo-column column">
+              {% if section.settings.footer_logo != blank %}
+                {{ section.settings.footer_logo | img_url: '500x' | img_tag | link_to: shop.url }}
+              {% else %}
+                <div class="placeholder-image">{{ 'image' | placeholder_svg_tag }}</div>
+              {% endif%}
+            </div>
+            <div class="text-beside-logo-column column rte">
+              {{ section.settings.text_content }}
+            </div>
+          </div>
+        {% else %}
+          <div class="rte">
+            {{ section.settings.text_content }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="links-column column" role="navigation" aria-label="{{ 'layout.footer.menu_1_aria_label' | t | escape }}">
+        <ul class="plain">
+          {% for link in linklists[section.settings.footer_linklist].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="links-column column" role="navigation" aria-label="{{ 'layout.footer.menu_2_aria_label' | t | escape }}">
+        <ul class="plain">
+          {% for link in linklists[section.settings.footer_linklist2].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="links-column column" role="navigation" aria-label="{{ 'layout.footer.menu_3_aria_label' | t | escape }}">
+        <ul class="plain">
+          {% for link in linklists[section.settings.footer_linklist3].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% else %}
+    <div class="footer-block-contianer">
+      {% if section.settings.million_logo != blank %}
+      	<div class="million-img">
+          <img src="{{section.settings.million_logo | img_url: '' }}" alt="{{ block.settings.million_logo.alt | escape }}">
+      	</div>  
+      {% endif %}	
+      <div class="footer-top-block">
+      {% if section.settings.show_footer_logo %}
+      <span class="footer-logo footer-block">
+        {% if section.settings.footer_logo != blank %}
+        {{ section.settings.footer_logo | img_url: '240x80' | img_tag | link_to: shop.url }}
+        {% else %}
+        <div class="placeholder-image">{{ 'image' | placeholder_svg_tag }}</div>
+        {% endif%}
+      </span>
+      {% endif %}
+      {% if section.settings.text_content != blank %}
+      <div class="footer-block column third second-block">
+        <div class="rte">
+          {{ section.settings.text_content }}
+        </div>        
+      </div>
+        <div class="footer-block column third third-block">        
+        <div class="social-column">
+          {% include 'social-links' %}
+        </div>
+      </div>
+        {% endif %}</div>
+      
+      <div class="notification-footer">
+      <ul>
+        {% for block in section.blocks %}
+          {% if block.type == 'shipping_bar_top' %}
+            <li>
+              {% if block.settings.shipping_bar_url_top != blank %}
+              	<a href="{{ block.settings.shipping_bar_url_top }}">
+              {%endif%}
+                {% if block.settings.shipping_bar_image_top%}
+                   <i class="icon"><img src="{{block.settings.shipping_bar_image_top | img_url: '' }}"></i>
+                {% endif %}
+                {% if block.settings.shipping_bar_html_top != blank %}
+                    <span>{{block.settings.shipping_bar_html_top}}</span>
+                {% endif %}
+              {% if block.settings.shipping_bar_url_top != blank %}
+              </a>
+              {%endif%}
+            </li>
+          {% endif %}
+      	{% endfor %}
+      </ul>
+    </div> 
+      
+      <div class="footer-nav footer-block column full">
+        {% assign footerBlockSize = 0 %}
+        {% assign footerBlockClass = '' %}
+        {% for block in section.blocks %}
+          {% assign footerBlockSize = footerBlockSize | plus: 1 %}
+        {% endfor %}
+        {% if footerBlockSize == 2 %}
+          {% assign footerBlockClass = 'half' %}
+        {% elsif footerBlockSize == 3 %}
+          {% assign footerBlockClass = 'third' %}
+        {% elsif footerBlockSize == 4 %}
+          {% assign footerBlockClass = 'fifth' %}  
+        {% else %}
+          {% assign footerBlockClass = '' %}
+        {% endif %}
+        {% for block in section.blocks %}
+        	{% if block.type == 'column' %}
+              <div class="footer-nav-block fifth column {{footerBlockClass }} {% if block.settings.hide_on_desktop != blank %} hide_on_desktop {% endif %}">
+                <h5>{{ block.settings.header }}</h5>
+                {% assign initAriaText = 'layout.footer.menu_' | append: forloop.index %}
+                {% assign ariaLabel = initAriaText | append: '_aria_label' %}
+                <ul class="plain list-divide" role="navigation" aria-label="{{ ariaLabel | t | escape }}">
+                  {% for link in linklists[block.settings.footer_linklist].links %}
+                  <li>{{ link.title | link_to: link.url }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+        	{% endif %}
+        {% endfor %}
+        {% comment %}
+        <div class="footer-nav-block column fifth insta-footer">
+          {% if section.settings.insta-code != blank %}
+          	{{section.settings.insta-code}}
+          {% endif %}
+        </div>
+        {% endcomment %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="notification-footer">
+      <ul>
+        {% for block in section.blocks %}
+          {% if block.type == 'shipping_bar' %}
+            <li>
+              {% if block.settings.shipping_bar_image != blank %}
+                  <i class="icon"><img src="{{block.settings.shipping_bar_image | img_url: '' }}" alt="{{ block.settings.shipping_bar_image.alt | escape }}"></i>
+              {% endif %}
+              {% if block.settings.shipping_bar_html != blank %}
+                  <span>{{block.settings.shipping_bar_html}}</span>
+              {% endif %}
+            </li>
+          {% endif %}
+      	{% endfor %}
+      </ul>
+    </div>  
+     <div class="row section padless-top signup-row">
+      <div class="extra-column column">
+        {% if section.settings.footer_display_newsletter %}
+          {% if section.settings.newsletter_text != blank %}
+            <div class="rte lightly-spaced-row">{{ section.settings.newsletter_text }}</div>
+          {% endif %}
+          {% include 'mailing-signup' %}
+        {% endif %}
+      </div>
+    </div>
+    {% comment %}
+    <script src="https://widget.reviews.io/rich-snippet-reviews-widgets/dist.js" type="text/javascript"></script>
+    <div id="text-banner-widget"></div>
+
+    <script>
+            richSnippetReviewsWidgets("text-banner-widget", {
+                store: "bevilles.com.au",
+                starsClr: "#ffe234",
+                textClr: "#ffffff",
+                logoClr: "white",
+              	min_rating: 3,
+                widgetName: "text-banner",
+              css:".TextBanner .TextBanner__text--outof{display:none;}"
+            });
+    </script>
+    {% endcomment %}
+    <div class="footer-lower inline-row spaced">
+      <div class="inline-item left">
+        <div class="copy">{{ 'layout.footer.copyright' | t }} &copy; {{ "now" | date: "%Y" }} {{ shop.name | link_to: '/' }}.</div>
+      </div>
+      <div class="inline-item right last payment-methods">
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag: class: 'payment-icon' }}
+        {% endfor %}  
+        {% if settings.enable_afterpay_footer %}
+        {% assign afterpay_logo_theme = 'colour' %}
+        <span class="payment-icon img"><img src="https://static.afterpay.com/integration/product-page/logo-afterpay-{{ afterpay_logo_theme }}.png" alt="Afterpay" /></span>  
+        {% endif %}
+        {% if settings.enable_zippay_footer %}
+        <span class="payment-icon img"><img src="{{ settings.zippay_logo | img_url: '150x' }}" alt="Zip Pay" /></span>  
+        {% endif %}
+        {% if settings.enable_humm_footer %}
+        <span class="payment-icon img"><img src="{{ 'humm-pay2.png' | asset_url }}" alt="Humm Pay" /></span>  
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% if settings.humm_css %}
+<style type="text/css">
+  {{settings.humm_css}}
+</style>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "select",
+        "id": "footer_complexity",
+        "label": "Layout",
+        "options": [
+          {
+            "value": "simple",
+            "label": "Simple"
+          },
+          {
+            "value": "columns",
+            "label": "Columns"
+          }
+        ],
+        "default": "simple"
+      },
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_footer_logo",
+        "label": "Show logo",
+        "default": false
+      },
+      {
+        "type": "image_picker",
+        "id": "footer_logo",
+        "label": "Image"
+      },
+      {
+        "type": "header",
+        "content": "Content"
+      },
+      {
+        "type": "richtext",
+        "id": "text_content",
+        "label": "Text"
+      },
+      {
+        "type": "header",
+        "content": "Menus"
+      },
+      {
+        "type": "header",
+        "content": "Newsletter"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_display_newsletter",
+        "label": "Show newsletter sign-up",
+        "default": true
+      },
+      {
+        "type": "richtext",
+        "id": "newsletter_text",
+        "label": "Content above input"
+      },
+	  {
+      	"type": "image_picker",
+      	"id": "million_logo",
+      	"label": "100 Million Image"
+      },
+	  {
+      	"type": "html",
+      	"id": "insta-code",
+      	"label": "Insta Code"
+      }	
+    ],
+    "blocks": [
+      {
+        "type":"column",
+        "name":"Footer Menu Links",
+        "settings":[
+          {
+            "type": "text",
+            "id": "header",
+            "label": "Column Header"
+          },
+          {
+            "type": "link_list",
+            "id": "footer_linklist",
+            "label": "Column Links"
+          },
+		  {
+            "type": "checkbox",
+            "id": "hide_on_desktop",
+            "label": "Hide On Desktop",
+			"default": false
+          }
+        ]
+      },
+	  {
+        "type":"more-info",
+        "name":"Footer Shipping Info",
+        "limit": 6,
+        "settings":[
+          {
+            "type": "html",
+            "id": "shipping-info",
+            "label": "Shipping Text"
+          }
+        ]
+      },
+	  {
+        "type": "shipping_bar",
+        "name": "Shipping Bar",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Shipping Bar"
+          },
+		  {
+            "type": "image_picker",
+            "id": "shipping_bar_image",
+            "label": "Shipping Bar Image"
+          },   	
+          {
+            "type": "text",
+            "id": "shipping_bar_html",
+            "label": "Shipping Bar Content"
+          }
+        ]
+      },
+	{
+        "type": "shipping_bar_top",
+        "name": "Product Information",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Product Information Top"
+          },
+		  {
+            "type": "image_picker",
+            "id": "shipping_bar_image_top",
+            "label": "Product Information Image"
+          },   	
+          {
+            "type": "text",
+            "id": "shipping_bar_html_top",
+            "label": "Product Information Content"
+          },
+			{
+            "type": "url",
+            "id": "shipping_bar_url_top",
+            "label": "Product Information Content URL"
+          }
+        ]
+      }	
+    ]
+  }
+{% endschema %}
+<style>
+  .insta-footer .fs-entry-container .fs-timeline-entry {
+    margin: 0 6px !important;
+}
+.insta-footer .fs-entry-container {
+    width: 33.33% !important;
+    height: 75px !important;
+    margin-bottom: 10px;
+    padding: 0 !important;
+}
+</style>  

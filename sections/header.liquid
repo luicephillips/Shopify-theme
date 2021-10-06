@@ -1,0 +1,550 @@
+<style type="text/css">
+{% if section.settings.logo != blank %}
+  .logo img {
+    width: {{ section.settings.logo_width }}px;
+  }
+{% endif %}
+{% if section.settings.nav_featured_link != blank %}
+  .nav-item-link--featured,
+  .main-nav .nav-item .nav-item-link.nav-item-link--featured {
+    color: {{ section.settings.nav_featured_col }};
+  }
+  .main-nav .nav-item .nav-item-link.nav-item-link--featured:after {
+    border-bottom: solid {{ section.settings.nav_featured_col }} 1px;
+  }
+{% endif %}
+</style>
+
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "{{shop.url}}",
+      "logo": "{{ section.settings.logo | img_url: img_size }}"
+    }
+</script>
+{% if template == 'gift_card' %}
+
+{% comment %} Gift card template logo {% endcomment %}
+<a class="logo" href="{{ shop.url }}">
+  {% if section.settings.logo != blank %}
+  {% capture img_size %}{{ section.settings.logo_width | times: 2 }}x{% endcapture %}
+  <img src="{{ section.settings.logo | img_url: img_size }}" alt="{{ section.settings.logo.alt | escape }}" />
+  {% else %}
+  {{ shop.name }}
+  {% endif %}
+</a>
+
+{% else %}
+
+
+{% assign featured_links = section.settings.nav_featured_link | split: ', ' %}
+<div class="page-header-wrap-top">
+<div class="page-header layout-{{ section.settings.header_layout }} {% if section.settings.use_mobile_logo %}using-compact-mobile-logo{% endif %}" data-section-type="header">
+ <div class="">	
+  
+  <div class="headaer-toop">
+    <ul>
+      {% for block in section.blocks %}
+        {% if block.type == 'shipping_bar' %}
+          <li>
+            {% if block.settings.shipping_bar_link != blank %}
+            <a href="{{block.settings.shipping_bar_link}}">
+            {% endif %}
+            {% if block.settings.shipping_bar_image != blank %}
+            	<i class="icon"><img src="{{block.settings.shipping_bar_image | img_url: '' }}" alt="{{ block.settings.shipping_bar_image.alt | escape }}"></i>
+            {% endif %}
+            {% if block.settings.shipping_bar_html != blank %}
+            	<span>{{block.settings.shipping_bar_html}}</span>
+            {% endif %}            
+            {% if block.settings.shipping_bar_link != blank %}
+      		</a>
+            {% endif %}
+          </li>
+        {% endif %}
+      {% endfor %}
+    
+    </ul>
+  </div>
+  <div class="header-main">
+    <div class="mobile-toolbar">
+      <a class="toggle-mob-nav open" href="javascript:void(0)" aria-controls="mobile-nav" aria-label="Open navigation">
+        <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+        </svg>
+      </a>
+      <a class="toggle-mob-nav close" href="javascript:void(0)" aria-controls="mobile-nav" aria-label="Open navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img" width="32px" height="32px" viewBox="0 0 32 32">
+          <path stroke="#000" class="fill" d="M16 16.521l-6.052 6.052c-.317.317-.773.374-1.02.128-.245-.246-.188-.702.129-1.019l6.052-6.052-6.052-6.052c-.317-.317-.374-.773-.128-1.02.246-.245.702-.188 1.019.129L16 14.739l6.052-6.052c.317-.317.773-.374 1.02-.128.245.246.188.702-.13 1.02l-6.051 6.051 6.052 6.052c.317.317.374.773.128 1.02-.246.245-.702.188-1.02-.13L16 16.522z"></path>
+        </svg>
+      </a>
+    </div>
+    <div class="top-logo">
+    {% if section.settings.logo != blank %}
+    	{% capture img_size %}{{ section.settings.logo_width | times: 2 }}x{% endcapture %}
+        <a href="{{ shop.url }}">
+          <img src="{{ section.settings.logo | img_url: img_size }}" alt="{{ section.settings.logo.alt | escape }}" />
+        </a>
+    {% else %}
+    	{{ shop.name | link_to: shop.url }}
+    {% endif %}
+    </div>  
+    <span class="search-bar">
+
+      {% if section.settings.show_header_search %}
+      <form class="search-form" action="/search" method="get">
+        <input type="hidden" name="type" value="{{ settings.search_type }}" />
+        <input type="text" name="q" placeholder="Search for jewellery, watches, gift, etc ..."/>
+        <button type="submit">{% include 'svg-search' %}</button>
+      </form>
+      {% endif %}
+      {% if section.settings.cataloglink_show %}
+      <span class="headerFeatLink">
+        {{section.settings.cataloglink_text }}
+      </span>
+      {% endif %}
+    </span>
+    <div class="custom-info">
+      <ul class="headerLinks">
+        {%- for link in linklists[section.settings.top_menu_linklist].links -%}
+          <li class="menu-topmenu"><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- endfor -%}
+        {% if section.settings.storelocator_show %}
+          <li class="menu-locator">
+            <a href="{{ section.settings.storelocator_url }}"><img alt="Bevilles Location" src="https://cdn.shopify.com/s/files/1/0034/8078/0835/files/pin.svg?v=1596980880"> {{ section.settings.storelocator_text }}</a>
+          </li>
+        {% endif %}
+		 <li class="menu-cart">
+          <a class="current-cart {% if template != 'cart' %}toggle-cart-summary{% endif %}" href="/cart">
+            {%comment%}{% include 'svg-cart' %}{%endcomment%}
+            <img alt="Bevilles Products Cart" src="https://cdn.shopify.com/s/files/1/0034/8078/0835/files/cart-icon.svg?v=1596980665"> My Cart
+            <!-- span class="beside-svg desktopTabletCounter">{{ cart.item_count }} / <span class="theme-money">{{ cart.total_price | money_without_currency }}</span></span-->
+            <span class="beside-svg">{{ cart.item_count }}</span>
+            <script>
+               window.cartCount = {{ cart.item_count }};
+               console.log(window.cartCount);
+            </script>
+			
+          </a>
+        </li>
+        <li class="menu-wishlist">
+          <a class="current-wishlist" title="Wishlist" href="/pages/wishlist">
+             <svg style="enable-background:new 0 0 128 128;" version="1.1" viewBox="0 0 128 128" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g class="st0" id="Layer_1"/><g id="Layer_2"><path class="st2" d="M57.3,32.7c-9.2-9.2-24.1-9.2-33.3,0c-9.2,9.2-9.2,24.1,0,33.3l6.7,6.7L64,106l33.3-33.3L104,66   c9.2-9.2,9.2-24.1,0-33.3s-24.1-9.2-33.3,0L64,39.4"/></g></svg>
+             <div class="bvwishcountheader"></div>
+          </a>
+        </li>
+        {% if shop.customer_accounts_enabled %}
+          {% if customer %}
+            {% if customer.metafields.bevilles.ec_number %}
+              <li class="eternity-account">
+                <a href="/account"  title="{{'layout.customer.ec_title' | t }}">
+                   <i class="far fa-gem"></i>
+                </a>
+              </li>
+            {% endif %}
+
+            <li class="menu-account">
+              <img alt="Bevilles Customer" src="https://cdn.shopify.com/s/files/1/0034/8078/0835/files/user-icon.svg?v=1596980820">
+              <a href="/account" title="{{ 'layout.customer.account' | t: customer_name: customer.first_name }}">
+                <span class="showTabletInline">{{ customer.first_name | slice: 0 }}{{ customer.last_name | slice: 0 }}</span>
+                <span class="showDesktopInline">{{ customer.first_name }}</span>
+                {% if customer.tags contains settings.ec_member_tag and customer.metafields.bevilles.ec_points %}
+                  <span class="ec_points">
+                    {{ 'layout.customer.ec_points' | t: count: customer.metafields.bevilles.ec_points }}
+                  </span>
+                {% endif %}
+              </a> /
+              <a href="/account/logout"  title="{{ 'layout.customer.logout' | t }}">
+                  {{ 'layout.customer.logout' | t }}
+              </a>
+            </li>
+
+          {% else %}
+            <li class="menu-account">
+              <img alt="Bevilles Customer" src="https://cdn.shopify.com/s/files/1/0034/8078/0835/files/user-icon.svg?v=1596980820">
+              <a href="/account/login" title="{{ 'layout.customer.login' | t }}">{{ 'layout.customer.login' | t }}</a> / <a title="{{'layout.customer.create_account' | t }}" href="/account/register">{{'layout.customer.create_account' | t }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+        {% if section.settings.cs_text != blank %}
+        <li class="large-hide">
+          <div id="toggle" class="custumer-service"><img alt="Customer service" src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/call-10.png"></div>
+          <div id="menu">
+          	<a href="tel:{{ section.settings.cs_text }}" class="custumer-service"><img alt="Bevilles Customer service care" src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/call-10.png"><span>Call Us</span></a>
+            <span class="customer-service">Customer Service: <br>{{ section.settings.cs_time }}</span>
+          </div>
+        </li>
+        {% endif %}
+       
+        {% include 'currencies-switcher' %}
+      </ul>
+    </div> 
+    <div class="contact-info">
+      {% if section.settings.cs_time != blank %}
+      <div class="call-desk-toggle">
+        <div class="mobile-show">
+          <a href="tel:{{ section.settings.cs_text }}">
+            <img alt="Phone Number" src="https://cdn.shopify.com/s/files/1/0034/8078/0835/files/headphone.png?v=1596687801">
+            <span>{{ section.settings.cs_text }}</span>
+          </a>
+        </div> 
+        <p class="">
+          {{ section.settings.cs_time }}
+        </p>
+      </div>
+      <div class="virtual-desk-toggle">
+        <div class="mobile-show">
+          <a href="{{ section.settings.live_chat_url | escape }}"> 
+            <img alt="Bevilles Schedule" src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/schedule_icon_01.png?v=1601979509">
+            <span>{{section.settings.live_chat}}</span>
+          </a>
+        </div> 
+      </div>
+      {% endif %}
+      {% if section.settings.cs_text != blank %}
+      <div class="contact-links">
+        <ul>
+          <li class="virtual-mobile-show">
+            <a href="javascript:void(0)" class="virtual-toggle">
+              <img alt="Bevilles Schedule" src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/schedule_icon_01.png?v=1601979509">
+              <span>{{section.settings.live_chat}}</span>
+            </a>
+          </li>
+          {% if section.settings.cs_text != blank or section.settings.live_chat !=blank %}
+          <li>
+            <a href="tel:{{ section.settings.cs_text }}" class="service call-toggle">
+              <img alt="Bevilles Schedule" src="https://cdn.shopify.com/s/files/1/0034/8078/0835/files/headphone.png?v=1596687801">
+              <span>{{ section.settings.cs_text }}</span>
+            </a>
+          </li>
+          {% endif }
+          {% if section.settings.live_chat !=blank and section.settings.live_chat_url !=blank %}
+          <li class="desktop">
+            <a href="{{ section.settings.live_chat_url | escape }}" class="service live-chat" id="live-chat">
+              <img alt="Live Chat" src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/schedule_icon_01.png?v=1601979509">
+              <span>{{section.settings.live_chat}}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+    </div>  
+  </div>     
+         
+ </div>  
+ {% comment %}
+  {% if section.settings.menu_linklist != blank %}
+    {% include 'main-navigation' %}
+  {% endif %}
+  {% endcomment %}
+  <div id="newnavigationnav"></div>
+  <script id="mobile-navigation-template" type="text/template">
+  {% include 'mobile-navigation' %}
+  </script>
+</div>
+</div>
+
+{% include 'selling-points' %}
+{% include 'statepopup' %}
+
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+
+
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Image",
+        "info": "300 x 200px recommended"
+      },
+      {
+        "type": "text",
+        "id": "logo_width",
+        "label": "Logo width (in pixels)",
+        "default": "300"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_mobile_logo",
+        "label": "Enable compact mobile logo",
+        "default": false
+      },
+      {
+        "type": "image_picker",
+        "id": "compact_logo",
+        "label": "Compact mobile logo"
+      },
+      {
+        "type": "header",
+        "content": "Toolbar options"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_header_search",
+        "label": "Show search box",
+        "default": true
+      },
+
+      {
+        "type": "checkbox",
+        "id": "cataloglink_show",
+        "label": "Catalog Link",
+        "default": true
+      },
+      {
+        "type": "richtext",
+        "id": "cataloglink_text",
+        "label": "Catalog Link text",
+        "default": "<p><a href='#'>Catalog <strong>Out Now</strong></a></p>"
+      },
+
+      {
+        "type": "link_list",
+        "id": "top_menu_linklist",
+        "label": "Top Menu"
+      },
+
+      {
+        "type": "checkbox",
+        "id": "storelocator_show",
+        "label": "Show Store Locator",
+        "default": true
+      },
+	  {
+        "type": "text",
+        "id": "storelocator_text",
+        "label": "Store Locator text",
+        "default": "Store Locator"
+      },
+      {
+        "id": "storelocator_url",
+        "type": "url",
+        "label": "Store Locator URL"
+      },
+	  {
+        "type": "text",
+        "id": "cs_text",
+        "label": "Custumer Service number",
+        "default": "1300797949"
+      },
+	  {
+        "type": "text",
+        "id": "cs_time",
+        "label": "Custumer Service Time",
+        "default": "Monday-Friday: 9:00 AM- 4:00 PM (AEST)"
+      },
+	  {
+        "type": "text",
+        "id": "live_chat",
+        "label": "Live Chat Title"
+      },
+	  {
+        "type": "url",
+        "id": "live_chat_url",
+        "label": "Live Chat Url"
+      },
+      {
+        "type": "header",
+        "content": "Navigation"
+      },
+      {
+        "type": "link_list",
+        "id": "menu_linklist",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "text",
+        "id": "nav_featured_link",
+        "label": "Featured link",
+        "info": "Use a different color to highlight this link",
+        "default": "Sale"
+      },
+      {
+        "type": "color",
+        "id": "nav_featured_col",
+        "label": "Featured link color",
+        "default": "#dd6666"
+      },
+      {
+        "type": "header",
+        "content": "Key Selling Points"
+      },
+      {
+        "type": "paragraph",
+        "content": "Add content by adding Selling Points blocks in header blocks"
+      },
+      {
+        "type": "checkbox",
+        "id": "announcement_show",
+        "label": "Show Key Selling Points",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "announcement_home_only",
+        "label": "Home page only",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "announcement_col_bar",
+        "label": "Key Selling Points Background",
+        "default": "#fafafa"
+      },
+      {
+        "type": "color",
+        "id": "announcement_col_text",
+        "label": "Key Selling Points Text Color",
+        "default": "#727a85"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "menu_promotion",
+        "name": "Menu promotion",
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Menu promotions are shown in dropdown menus. They are not visible in the mobile menu."
+          },
+          {
+            "type": "text",
+            "id": "dropdown_link_title",
+            "label": "Dropdown link title",
+            "info": "Which dropdown menu to show this promotion in"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link_url",
+            "label": "Link URL"
+          }
+        ]
+      },
+      {
+        "type": "selling_points",
+        "name": "Selling Points",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Selling Points"
+          },
+          {
+            "type": "textarea",
+            "id": "selling_points_html",
+            "label": "Selling Points Content"
+          }
+        ]
+      },
+	  {
+        "type": "shipping_bar",
+        "name": "Shipping Bar",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Shipping Bar"
+          },
+		  {
+            "type": "image_picker",
+            "id": "shipping_bar_image",
+            "label": "Shipping Bar Image"
+          },   	
+          {
+            "type": "text",
+            "id": "shipping_bar_html",
+            "label": "Shipping Bar Content"
+          },
+			{
+            "type": "url",
+            "id": "shipping_bar_link",
+            "label": "Shipping Bar Information Page"
+          }
+        ]
+      },
+	  {
+        "type": "statepopup",
+        "name": "State Popup",
+        "settings": [
+          {
+            "type": "header",
+            "content": "State Popup"
+          },
+ 		  {
+            "type": "checkbox",
+            "id": "enable_statepopup",
+            "label": "Enable Popup",
+            "default": false
+          },
+ 		  {
+            "type": "checkbox",
+            "id": "onlystickybutton",
+            "label": "Only Sticky Button",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Button Text"
+          },
+		  {
+            "type": "color",
+            "id": "text_color",
+            "label": "Button text color",
+            "default": "#000000"
+          },
+		  {
+            "type": "color",
+            "id": "button_background_color",
+            "label": "Button background color",
+            "default": "#CCC9E5"
+          },
+          {
+             "type": "select",
+             "id": "state",
+             "options": [
+				{ "value": "NSW", "label": "New South Wales"},
+                { "value": "QLD", "label": "Queensland"},
+				{ "value": "SA", "label": "South Australia"},
+				{ "value": "TAS", "label": "Tasmania"},
+                { "value": "VIC", "label": "Victoria"},
+				{ "value": "WA", "label": "Western Australia"},
+				{ "value": "NT", "label": "Northern Territory"},
+				{ "value": "GJ", "label": "Gujarat"}
+             ],
+             "label": "Select State"
+          },
+		  {
+            "type": "image_picker",
+            "id": "statedesktopimage",
+            "label": "Desktop Popup Image"
+          },
+ 		  {
+            "type": "image_picker",
+            "id": "statemobileimage",
+            "label": "Mobile Popup Image"
+          },
+		  {
+            "type": "url",
+            "id": "popup_link",
+            "label": "Popup link"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

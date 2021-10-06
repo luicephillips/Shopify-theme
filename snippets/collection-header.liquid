@@ -1,0 +1,74 @@
+{% assign grcap_anchor_collection_content = '<span class="grcap_anchor_collection">' | append: collection.description | append: '</span>' %}
+
+{% for block in section.blocks %}
+   {% if block.settings.collection_name != blank and block.settings.collection_name == collection.handle %}
+ 	{% assign banner_bg_cl = block.settings.collection_bg_color %}
+	{% assign banner_text_cl = block.settings.collection_text_color %}
+	{% assign banner_img_desktop = block.settings.banner_image_desktop %}
+	{% assign banner_img_mobile = block.settings.banner_image_mobile %}
+    {% break %}
+{% else %}
+    {% assign banner_bg_cl = section.settings.banner_bg_color %}
+    {% assign banner_text_cl = section.settings.banner_text_color %}
+	{% assign banner_img_desktop = '' %}
+	{% assign banner_img_mobile = '' %}
+{% endif %}
+{% endfor %}
+
+<div class="collection-header {{ section.settings.header_mode }} {% if collection.image %}has-image{% endif %} {% if grcap_anchor_collection_content != blank %}has-image {% unless collection.image %}no-image{% endunless %}{% endif %} handle-{{ collection.handle }} {% if banner_img_mobile != blank %}show_mobile{% endif %}" style="background-color:{{banner_bg_cl}}">
+  {% if banner_img_desktop != blank and banner_img_mobile != blank %}
+  <div class="banner-image">
+  	<img class="hide_on_mobile" src="{{ banner_img_desktop | img_url: '' }}" alt="{{ collection.name | escape }}"/>	
+    <img class="hide_on_desktop" src="{{ banner_img_mobile | img_url: '' }}" alt="{{ collection.name | escape }}"/>	
+  </div>
+  {% else %}
+  <div class="container">
+    {% if section.settings.header_mode == 'coloured-split' %}
+    <div class="ft">
+      <div class="ftr">
+        <div class="ftc vb">
+          {% endif %}
+          <div class="header-text catDescBox" style="color: {{banner_text_cl}}">
+            {% if collection.handle == 'product-finder' %}
+            <h1 id="bc-sf-filter-collection-header" class="page-title" style="text-align: center; border-color: {{banner_text_cl}}">{{ collection.title }}</h1>
+            {% else %}
+            <h1 id="bc-sf-filter-collection-header" class="page-title" style="color: {{banner_text_cl}};border-color: {{banner_text_cl}}">{{ collection.title }}</h1>
+            {% endif %}
+            {% if grcap_anchor_collection_content != "" %}
+            <div id="bc-sf-filter-collection-description" class="rte">
+              {% if grcap_anchor_collection_content contains '</p>' %}
+              {{ grcap_anchor_collection_content }}
+              {% else  %}   
+              <p>{{ grcap_anchor_collection_content }}</p>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if collection.handle == 'christmas-sale' or collection.handle == 'mothers-day-gifts' or collection.handle == 'watches' %}
+              <div class="filter-buttons">
+                {% for block in section.blocks %}
+                  {% if block.settings.button_text != blank and block.settings.button_link %}
+                    <a class="btn" href="{{block.settings.button_link}}">{{block.settings.button_text}}</a>
+                  {% endif %}
+              	{% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if section.settings.header_mode == 'coloured-split' %}
+        </div>
+		{% if collection.image %}
+        <div class="header-image ftc">
+          {% if collection.image %}
+          <img src="{{ collection.image | img_url: '' }}" alt="{{ collection.name | escape }}"/>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% if collection.handle == 'product-finder' %}
+<style>#collection{display:none;}</style>
+{% endif%}

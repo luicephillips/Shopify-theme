@@ -1,0 +1,128 @@
+<nav id="newnavigation" class="main-nav cf desktop align-" data-col-limit="" aria-label="Primary navigation">
+ 	<ul>
+      <li class="nav-item dropdown drop-uber">
+        <a class="nav-item-link nav-item-link--featured" href="javascript:void(0)" aria-haspopup="true" aria-expanded="false">
+          <span class="menu-toggle menu-open">
+            <span class="icon-menu">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </span>
+          <span class="nav-item-link-title">Menu</span>          
+        </a>
+        <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        	<path d="M7.41 7.84L12 12.42l4.59-4.58L18 9.25l-6 6-6-6z"></path>
+            <path d="M0-.75h24v24H0z" fill="none"></path>
+        </svg>
+		<div class="side-nav-wrapper">	
+        <ul class="side-nav">
+          {% section 'diamondmenu' %}
+          {% section 'engagementmenu' %}
+          {% section 'jewellerymenu' %}
+          {% section 'ringsmenu' %}
+          {% section 'necklacesmenu' %}
+          {% section 'earringsmenu' %}
+          {% section 'braceletsmenu' %}
+          {% section 'watchmenu' %}
+          {% section 'goldjewellerymenu' %}
+          {% section 'silverjewellerymenu' %}
+          {% section 'jewelleryboxmenu' %}
+          {% section 'giftsmenu' %}
+          {% section 'brandsmenu' %}
+          {% section 'latestarrivalsmenu' %}
+          {% section 'salemenu' %}
+          {% section 'guidemenu' %}
+        </ul>
+        </div>
+	  </li>
+
+      
+<!--        <li class="nav-item">
+        <a class="nav-item-link" href="/collections/new" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">LATEST ARRIVALS</span>
+        </a>
+      </li> -->
+
+      <li class="nav-item">
+        <a class="nav-item-link" href="/collections/diamond-jewellery" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">DIAMONDS</span>
+        </a>
+        <div class="diamondsubmenu mainsubmenus"></div>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-item-link" href="/collections/engagement-rings" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">ENGAGEMENT</span>          
+        </a>
+        <div class="engagementsubmenu mainsubmenus"></div>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-item-link" href="/collections/jewellery" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">JEWELLERY</span>
+        </a>
+        <div class="jewellerysubmenu mainsubmenus"></div>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-item-link" href="/collections/gold" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">Gold</span>          
+        </a>
+        <div class="goldsubmenu mainsubmenus"></div>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-item-link" href="/collections/silver-jewellery" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">Silver</span>          
+        </a>
+        <div class="silversubmenu mainsubmenus"></div>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-item-link" href="/collections/watches" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">WATCHES</span>          
+        </a>
+        <div class="watchesubmenu mainsubmenus"></div>
+      </li>
+
+<!--       <li class="nav-item">
+        <a class="nav-item-link" href="/collections/love-by-michelle-beville" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">BRANDS</span>
+        </a>
+      </li> -->
+
+      <li class="nav-item salenavigation">
+        <a class="nav-item-link nav-item-link--featured" href="/collections/sale" aria-haspopup="true" aria-expanded="false">
+          <span class="nav-item-link-title">SALE</span>
+        </a>
+        <div class="salesubmenu mainsubmenus"></div>
+      </li> 
+      
+    </ul>
+   
+ </nav>
+<script type="text/javascript">
+var newnavigation = document.getElementById('newnavigation');
+document.getElementById('newnavigationnav').appendChild(newnavigation);
+var newnavigation = document.querySelector('#shopify-section-diamondmenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.diamondsubmenu').appendChild(newnavigation);
+  
+var newnavigation = document.querySelector('#shopify-section-engagementmenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.engagementsubmenu').appendChild(newnavigation);
+  
+var newnavigation = document.querySelector('#shopify-section-goldjewellerymenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.goldsubmenu').appendChild(newnavigation);
+  
+var newnavigation = document.querySelector('#shopify-section-silverjewellerymenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.silversubmenu').appendChild(newnavigation);
+  
+var newnavigation = document.querySelector('#shopify-section-watchmenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.watchesubmenu').appendChild(newnavigation);
+  
+var newnavigation = document.querySelector('#shopify-section-salemenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.salesubmenu').appendChild(newnavigation);
+  
+var newnavigation = document.querySelector('#shopify-section-jewellerymenu li .side-sub-nav').cloneNode( true );
+document.querySelector('.jewellerysubmenu').appendChild(newnavigation);  
+</script>

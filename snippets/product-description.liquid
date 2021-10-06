@@ -1,0 +1,26 @@
+{% assign grcap_anchor_product_content = '<span class="grcap_anchor_product">' | append: product.description | append: '</span>' %}
+<div class="product-description rte spaced-row reading-column" itemprop="description">
+  
+  {% comment %}
+	  {{ grcap_anchor_product_content | replace: 'fullwidth"', '" data-fullwidth="true"' }}
+  {% endcomment %}
+  {% if description_type== "short"%}
+  <ul>
+    <li>Free Shipping Over ${{settings.free_shipping_over}}*</li>
+  </ul>
+    <span class="second_line"></span>
+  {% endif %}
+  {% if description_type== "long"%}
+  <div id="" class="bevs-accordion">
+  <h3 class="acordin-title">
+        Description
+        <i class="fa fa-angle-down"></i>
+        <i class="fa fa-angle-up" style="display:none;"></i>
+      </h3>
+      <div style="display:none;" class="acordian-content">
+  		<p class="remaining_deescription"></p>
+        </div>
+  </div>
+  {% endif %}
+  
+</div>

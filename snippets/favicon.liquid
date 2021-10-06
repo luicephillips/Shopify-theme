@@ -1,0 +1,5 @@
+{% if settings.favicon != blank and settings.favicon contains '.png' %}
+<link rel="shortcut icon" href="{{ settings.favicon | img_url: 'master' }}" type="image/png" />
+{% elsif settings.favicon != blank and settings.favicon contains '.ico' %}
+<link rel="shortcut icon" href="{{ settings.favicon | img_url: 'master' }}" type="image/x-icon" />
+{% endif %}

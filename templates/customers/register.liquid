@@ -1,0 +1,119 @@
+{% if customer %}
+<script type="text/javascript">
+  window.location = "/account";
+</script>
+{% else %}
+<div id="customer-register" class="container">
+  <div id="register" class="small-form-column">
+    <h1 class="page-title">{{ 'customer.register.title' | t }}</h1>
+
+    {% form 'create_customer' %}
+
+      <div class="app_form_errors">
+        {% if form.errors %}
+        <div class="notification errors">
+          {{ form.errors | default_errors }}
+        </div>
+        {% endif %}
+      </div>
+
+      <div id="first_name" class="input-row">
+        <label for="first_name" class="label">{{ 'customer.register.first_name' | t }} *</label>
+        <input type="text" value="" required name="customer[first_name]" id="first_name" class="text" size="30" />
+      </div>
+
+      <div id="last_name" class="input-row">
+        <label for="last_name" class="label">{{ 'customer.register.last_name' | t }} *</label>
+        <input type="text" value="" required name="customer[last_name]" id="last_name" class="text" size="30" />
+      </div>
+
+      <div id="email" class="input-row">
+        <label for="email" class="label">{{ 'customer.register.email' | t }} *</label>
+        <input type="email" value="" required name="customer[email]" id="email" class="text" size="30" />
+      </div>
+
+      <div  class="input-row">
+        <label for="phone" class="label">{{ 'customer.register.phone' | t }} *</label>
+        <input type="tel" value="" name="" required class="eternityPhone" id="phone" class="text" size="30" />
+      </div>
+
+      <div id="password" class="input-row">
+        <label for="password" class="label">{{ 'customer.register.password' | t }} *</label>
+        <input type="password" value="" required name="customer[password]" id="password" class="password text" size="30" />
+      </div>
+
+      {% if settings.enable_eternity %}
+        <div id="eternity_check_field" class="input-row radioRow">
+          <div>
+            <label class="label">{{ 'customer.register.eternity_check' | t }}</label>
+          </div>
+          <label><input type="radio" name="eternity_check" value="no" checked="checked"  /> No</label>
+          <label><input type="radio" name="eternity_check" value="yes" /> Yes</label>
+        </div>
+        <div id="eternity_number_field" class="input-row new">
+          <div><small>{{ 'customer.register.eternity_number_new' | t }}</small></div>
+          <input type="text" value="" name="eternityNumNew" id="eternity_number_new" class="text eternityNum" size="30" placeholder="{{ 'customer.register.eternity_placeholder_new' | t }}"  />
+        </div>
+        <div id="eternity_number_field" class="input-row existing">
+          <div><small>{{ 'customer.register.eternity_number_existing' | t }}</small></div>
+          <input type="text" value="" name="eternityNumExisting" id="eternity_number_existing" class="text eternityNum" size="30" placeholder="{{ 'customer.register.eternity_placeholder_existing' | t }}"  />
+        </div>
+      {% endif %}
+
+      <input type="hidden" value="" name="customer[note][metafields]" id="eternity_field"   />
+      {%comment%}
+      <div id="accepts_marketing" class="clearfix large_form accepts-marketing">
+        <input type="checkbox" name="customer[note][accepts_marketing]" checked="checked" value="true" id="accepts_marketing" />
+        <label for="accepts_marketing" style="font-weight:normal">I want to receive the newsletter. <strong>This is required in order to become an official member.</strong></label>
+      </div>
+      {%endcomment%}
+      <input type="hidden" name="customer[accepts_marketing]" value="false" id="subscibenewsletter" />
+      <div id="accepts_marketing" class="clearfix large_form accepts-marketing">
+        <input type="checkbox" name="customer[note][accepts_marketing]" value="true" id="accepts_marketing" />
+        <label for="accepts_marketing" style="font-weight:normal">Sign up to receive exclusive offers</label>
+      </div>
+      <div id="accepts_email_marketing" class="clearfix large_form accepts-marketing">
+        <input type="checkbox" name="customer[note][accepts_email_marketing]" value="true" id="accepts_email_marketing" />
+        <label for="accepts_email_marketing" style="font-weight:normal">I would like to be contacted by email</label>
+      </div>
+      <div id="accepts_call_marketing" class="clearfix large_form accepts-marketing">
+        <input type="checkbox" name="customer[note][accepts_call_marketing]" value="true" id="accepts_call_marketing" />
+        <label for="accepts_call_marketing" style="font-weight:normal">I would like to be contacted by mobile</label>
+      </div>
+      
+      <div class="input-row">
+        <input class="btn" type="submit" value="{{ 'customer.register.submit' | t }}" /> {{ 'customer.general.or' | t }}
+        <span class="note"><a class="standard-link" href="{{ shop.url }}">{{ 'customer.register.cancel' | t }}</a></span>
+      </div>
+      <div class="info-text">
+          By clicking the Create button, you agree to our <a target="_blank" href="/pages/terms-and-conditions">Terms and Conditions</a> and to receive email updates and special promotions, which you may unsubscribe from at any time. We treat your privacy seriously, please review our <a target="_blank" href="/pages/policy-privacy">Privacy Policy</a> for more information.
+      </div>
+      <br>
+      <a class="register-link" href="/account/login">{{ 'customer.register.login' | t }}</a>
+    
+    {% endform %}
+  </div><!-- #register -->
+</div><!-- #customer-register -->
+{% endif %}
+<!-- <script type="text/javascript">
+  (function () {
+    var form = document.getElementById('create_customer');
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        setTimeout(form.submit.bind(form), 0);
+      });
+    }
+  })();
+</script> -->
+
+<style>
+{% if settings.enable_eternity_field %}  
+{% else %}
+  #eternity_number_field {
+  display: none !important;
+  }  
+  #eternity_check_field {
+  display: none !important;  
+  }
+{% endif %}
+</style>

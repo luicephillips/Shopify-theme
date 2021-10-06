@@ -1,0 +1,54 @@
+{% case media.media_type %}
+{% when 'image' %}
+{% when 'external_video' %}
+<!-- <a class="thumbnail video-thumb" href="#" data-src="" data-full-image-width="" style="width:70px">
+  <div class="rimage-outer-wrapper ">
+    <div class="product-single__media_1" data-media-id="{{ media.id }}">
+      {{ media | external_video_tag }}
+    </div>
+  </div>
+</a> -->
+<div class="product-single__media" style="" data-media-id="{{ media.id }}">
+  {{ media | external_video_tag }}
+</div>
+{% when 'video' %}
+<a class="thumbnail productvideothumb" href="//cdn.shopify.com/s/files/1/0057/6657/8279/products/9M07001.jpg?v=1600844087" data-src="//cdn.shopify.com/s/files/1/0057/6657/8279/products/9M07001_842x.jpg?v=1600844087" data-full-image-width="2000" style="width: 70.0px">
+          <div class="rimage-outer-wrapper " style="max-width: 2000px">
+  <div class="rimage-wrapper lazyload--placeholder" style="padding-top:100.0%">
+    {% assign videoimage = product.featured_image | img_url %}
+    {% if media.alt != product.title %}
+    	{% assign videoimage = media.alt %}
+    {% endif %}
+    {% if videoimage contains "jpg" or videoimage contains "jpeg" or videoimage contains "png" %}
+    	{% assign videoimage = videoimage %}
+    {% else %}
+    	{% assign videoimage = product.featured_image | img_url %}
+    {% endif %}
+
+    <img class="rimage__image lazyload fade-in"
+      data-src="{{videoimage}}"
+      data-widths="[90, 180, 220, 300, 360, 460, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+      data-aspectratio="1.0"
+      data-sizes="auto"
+      src="{{ product.featured_image | img_url }}"
+      alt="Video"
+      >
+    <noscript>
+      
+      <img src="//cdn.shopify.com/s/files/1/0057/6657/8279/products/9M07001_1024x1024.jpg?v=1600844087" alt="Video image" class="rimage__image ">
+    </noscript>
+  </div>
+</div>
+
+{{ media | video_tag: autoplay:true }}
+
+        </a>
+{% when 'model' %}
+<div class="product-single__media_3" style="padding-top: 100%" data-media-id="{{ media.id }}">
+  {{ media | model_viewer_tag }}
+</div>
+{% else %}
+<div class="product-single__media_4" style="padding-top: 100%;" data-media-id="{{ media.id }}">
+  {{ media | media_tag }}
+</div>
+{% endcase %}

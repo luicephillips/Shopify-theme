@@ -1,0 +1,89 @@
+{% assign breadcrumbsschema = ''; %}
+<div class="breadcrumb-wrapper">
+  <div class="container">
+  {% unless template == 'index' or template == 'list-collections' %}
+  	<nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+    <a href="/" title="Home">Home</a>
+    {% assign breadcrumbsschema = breadcrumbsschema| append: 'name:Home;item:' | append:shop.url | append: '|&' %}
+    {% if template contains 'page' %}
+      <span aria-hidden="true">&rsaquo;</span>
+      {% if template contains 'info-page' %}
+      <span>{{ collection.title }}</span>
+      {% endif %}
+      <span>{{ page.title }}</span>
+      {% assign breadcrumbsschema = breadcrumbsschema| append: 'name:' | append:page.title | append: ';item:' | append: '|&' %}
+    {% elsif template contains 'product' %}
+      {% if collection.url %}
+        <span aria-hidden="true">&rsaquo;</span>
+        {{ collection.title | link_to: collection.url }}
+        {% assign breadcrumbsschema = breadcrumbsschema| append: 'name:' | append:collection.title | append: ';item:' | append:shop.url | append: collection.url | append: '|&' %}
+      {% endif %}
+      <span aria-hidden="true">&rsaquo;</span>
+      <span>{{ product.title }}</span>
+      {% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:product.title | append: ';item:' | append: '|&' %}
+    {% elsif template contains 'collection' and collection.handle %}
+      <span aria-hidden="true">&rsaquo;</span>
+      {% if current_tags %}
+        {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+        {{ collection.title | link_to: url }}
+        <span aria-hidden="true">&rsaquo;</span>
+        <span>{{ current_tags | join: " + " }}</span>
+        {% assign breadcrumbsschema = breadcrumbsschema| append: 'name:' | append:collection.title | append: ';item:' | append:shop.url | append: url | append: '|&' %}
+      	{% assign current_tags = current_tags | join: " + " %}
+      	{% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:current_tags | append: ';item:' | append: '|&' %}
+      {% else %}
+        <span>{{ collection.title }}</span>
+      	{% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:collection.title | append: ';item:' | append: '|&' %}
+      {% endif %}
+    {% elsif template == 'blog' %}
+      <span aria-hidden="true">&rsaquo;</span>
+      {% if current_tags %}
+        {{ blog.title | link_to: blog.url }}
+        <span aria-hidden="true">&rsaquo;</span>
+        <span>{{ current_tags | join: " + " }}</span>
+      	{% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:blog.title | append: ';item:' | append:shop.url | append: blog.url | append: '|&' %}
+      {% else %}
+      	<span>{{ blog.title }}</span>
+      	{% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:blog.title | append: ';item:' | append: '|&' %}
+      {% endif %}
+    {% elsif template == 'article' %}
+      <span aria-hidden="true">&rsaquo;</span>
+      {{ blog.title | link_to: blog.url }}
+      <span aria-hidden="true">&rsaquo;</span>
+      <span>{{ article.title }}</span>
+      {% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:blog.title | append: ';item:' | append:shop.url | append: blog.url | append: '|&' %}
+      {% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:article.title | append: ';item:' | append: '|&' %}
+    {% elsif template == 'customers/login' %}
+      <span aria-hidden="true">&rsaquo;</span>
+      <span>{{ 'Login' }}</span>
+      {% elsif template == 'search' %}
+      <span aria-hidden="true">&rsaquo;</span>
+     	<span></span>
+      {% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:page_title | append: ';item:' | append: '|&' %}
+    {% else %}
+     <span aria-hidden="true">&rsaquo;</span>
+     <span>{{ page_title }}</span>
+      {% assign breadcrumbsschema = breadcrumbsschema | append: 'name:' | append:page_title | append: ';item:' | append: '|&' %}
+    {% endif %}
+  </nav>
+  {% endunless %}
+  </div>
+</div>
+{% if breadcrumbsschema != '' %}
+  {% assign breadcrumbsschema = breadcrumbsschema | split: '|&' %}
+  {% if breadcrumbsschema.size > 0 %}
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{% for breadcrumb in breadcrumbsschema %}{% assign schema = breadcrumb | split: ';' %}{% assign item = schema.last | replace: "item:", "" %}{
+            "@type": "ListItem",
+            "position": {{forloop.index}},
+            "name": "{{schema.first | replace: "name:", ""}}"{% if item != ''%},
+            "item": "{{item}}"{% endif %}
+          }{% if breadcrumbsschema.size != forloop.index%},
+          {% endif %}{% endfor %}]
+      }
+  </script>
+  {% endif %}
+{% endif %}

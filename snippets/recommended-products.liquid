@@ -1,0 +1,65 @@
+{% assign recommended_markup = '' %}
+{% assign recommendedProducts = false %}
+{% assign collectionURL = collection.url %}
+
+
+{% comment %}set view all link based on the metafields or default to all{% endcomment %} 
+{% if collectionURL == blank %}
+{% assign collectionURL = 'collections/all' %}
+{% endif %}
+{% if product.metafields.bevilles.recommendedCollection %}
+  {% if product.metafields.bevilles.recommendedProducts %}
+  {% else %}
+    {% capture collectionURL %}collections/{{product.metafields.bevilles.recommendedCollection | split: '|' | first}}{% endcapture %}
+  {% endif %}
+{% endif %}
+
+
+{% comment %}recommended product handles{% endcomment %} 
+{% if product.metafields.bevilles.recommendedProducts %}
+    {% assign selected_handles = product.metafields.bevilles.recommendedProducts | split: '|' %}
+    {% capture recommended_markup %}
+        {% for selected_handle in selected_handles  %}
+            {% if all_products[selected_handle] and all_products[selected_handle].title != '' %}
+                    {% if all_products[selected_handle].available %}
+                      {% include 'product-block', product: all_products[selected_handle] %}
+                    {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endcapture %}
+
+    {% assign recommended_markup = recommended_markup | trim %}
+    {% unless recommended_markup == blank %}
+        {% assign recommendedProducts = true %}
+    {% endunless %}
+{% endif %}
+
+{% if recommendedProducts == false %}
+  {% comment %}if recommended is still false use collection metafields{% endcomment %} 
+  {% assign recommended_markup = '' %}
+  {% if product.metafields.bevilles.recommendedCollection %}
+      {% capture recommended_markup %}
+        {% for product in collections[product.metafields.bevilles.recommendedCollection].products  limit: 20 %}
+          {% if product.available %}
+             {% include 'product-block' %}
+             {% assign recommendedProducts = true %}
+          {% endif %}
+        {% endfor %}
+      {% endcapture %}
+      
+  {% endif %}
+{% endif %}
+
+{% if recommendedProducts == true %}
+<section class="products-section related-sections">
+  <div class="container">
+    <div class="opposing-items">
+      <h3 class="section-heading left">{{ section.settings.recommend_title }}</h3>
+      <a class="more-link" href="{{ collectionURL }}">{{ 'collections.general.view_all' | t }}</a>
+    </div>
+    <div id="recommendedItems" class="product-list row">  
+      {{recommended_markup}}
+    </div>
+  </div>    
+</section><!-- products-section -->
+{% endif %}

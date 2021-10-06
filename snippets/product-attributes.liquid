@@ -1,0 +1,44 @@
+
+{% assign productAttributes = settings.product_attributes | sort %}
+{% assign productAttributes = productAttributes | split: "," %}
+
+{% if productAttributes != nil %}
+  {% capture productAttributesList %}
+    {% for tag in product.tags %}
+      {% for productAttribute in productAttributes %}
+        {% if tag contains productAttribute %}
+          {{ tag }}
+          {% if forloop.last == false %}::{% endif%}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endcapture %}
+
+  {% assign productAttributesArray = productAttributesList | split: "::" %}
+<div id="" class="bevs-accordion">
+<h3 class="acordin-title">
+        Specifications
+        <i class="fa fa-angle-down"></i>
+        <i class="fa fa-angle-up" style="display:none;"></i>
+      </h3>
+      <div style="display:none;" class="acordian-content">
+  {% for tag in productAttributesArray %}
+  {% assign prevIndex = forloop.index0 | minus: 1 %}
+    {% for productAttribute in productAttributes %}
+      {% if tag contains productAttribute %}
+        <div class="item-attributes">
+          {% comment %} DO NOT repeat label {% endcomment %}
+          {% if productAttributesArray[prevIndex] contains productAttribute %}
+              {% assign productAttributeLabel = '' %}
+            {% else %}
+              {% assign productAttributeLabel = productAttribute %}
+            {% endif %}
+          <span class="item-attributes__label">{{ productAttributeLabel }} </span>
+          <span class="item-attributes__value"> {{ tag | remove: productAttribute }} </span>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  </div>
+</div>
+{% endif %}

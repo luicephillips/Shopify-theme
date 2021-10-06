@@ -1,0 +1,731 @@
+{% assign show_single_variant_details = true %}
+{% assign product = all_products[settings.product] %}
+{% assign product1 = all_products[settings.product1] %}
+{% assign product2 = all_products[settings.product2] %}
+{% assign product_id = product.id %}
+{% assign product_id1 = product1.id %}
+{% assign product_id2= product2.id %}
+{% assign cart_total = cart.total_price | divided_by: 100 %}
+{% assign cart_without_zero = product.selected_or_first_available_variant.price | divided_by: 100 %}
+{% assign cart_total_exclude = cart_total | minus: cart_without_zero %}
+{% assign spend_value = settings.spend_value | plus: 0  %}
+{% assign spend_value1 = settings.spend_value1 | plus: 0  %}
+{% assign spend_value2 = settings.spend_value2 | plus: 0  %}
+{% comment %}
+{% if cart_total_exclude < spend_value %}
+	{% for item in cart.items %}
+      {% if item.product.id == product_id %}
+		<script>
+          window.location.href = '/cart/change?line={{ forloop.index }}&quantity=0';
+        </script>
+		<a id="Remove_item_selected" href="/cart/change?line={{ forloop.index }}&quantity=0" rel="{{ item.id }}"></a>
+      {% endif %}
+    {% endfor %}
+{% endif %}
+{% endcomment %}
+
+<div class="container">
+	<div class="pageContent">
+  {% if cart.item_count == 0 %}
+    
+    <h2 class="page-title">{{ 'cart.general.empty_title' | t }}</h2>
+    
+    <div class="rte">{{ 'cart.general.empty_subtext_html' | t }}</div>
+  {% else %}
+     
+    {% comment %}
+    <h1 class="page-title">{{ 'cart.general.title' | t }}</h1>
+    {% endcomment %}
+    {% assign free_ship_value = settings.free_shipping_over  %}
+      {% assign shipping_value = free_ship_value | times: 100.0 %}
+      {% assign cart_total = cart.total_price %}
+      {% assign shipping_value_left = shipping_value | minus: cart_total %}
+      {% if section.settings.free-ship ==  true %}
+        {% if shipping_value_left > 0 %}
+      {% assign show_ship_value_msg = true  %}
+  			{% if cart.item_count == 1 %}
+  			{% for item in cart.items %}
+  				{% if item.product.id == 3991781310567 %}
+  					{% assign show_ship_value_msg = false  %}
+  				{% endif %}
+  			{% endfor %}
+  			{% endif %}
+  {% if show_ship_value_msg == true	%}
+          <div class="notification freeShipMsg" data-freeship="{{free_ship_value}}" data-freeship-msg="{{ section.settings.free-ship_html  }}" data-freeship-msg2="{{ section.settings.free-ship_html2  }}">
+            <div class="rte">  
+            {% capture shipRem %}<span class="rem">{{shipping_value_left | money_without_trailing_zeros}}</span>{% endcapture %} 
+            {{ section.settings.free-ship_html | replace: '[x]', shipRem}}
+            </div>
+          </div>
+      {% endif %}
+        {% else %}
+          <div class="notification freeShipMsg">
+            <div class="rte">  
+              {{ section.settings.free-ship_html2 }}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %} 
+    {% if section.settings.cart_notification_show and section.settings.cart_notification_pos != 'under-items' %}
+    <div class="notification">
+      <div class="rte">{{ section.settings.cart_notification_text }}</div>
+    </div>
+    {% endif %}
+  	{% for item in cart.items %}
+      {% if item.product.id == product_id %}
+        {% assign hide_btn = true %}
+      {% endif %}
+      {% if item.product.id == product_id1 %}
+        {% assign hide_btn1 = true %}
+      {% endif %}
+    {% endfor %}
+  	
+  	{% assign cart_total = cart.total_price | divided_by: 100 %}
+  	
+	{% assign cart_total = cart.total_price | divided_by: 100 %}
+  	{% if cart_total > 1 and cart_total < 1501 %}
+		{% assign showInstallementClass = "afterpay_installement" %}
+    {% endif %}
+    {% if cart_total > 1500 %}
+    	{% assign showInstallementClass = "zip_installement" %}
+    {% endif %} 
+  
+    <form action="/cart" method="post" id="cartform">
+      <div class="row">
+        <div class="column cart-left-section">
+          
+        	<!--<div class="spaced opposing-items">-->
+            <div class="">
+        		{% assign total_saving = 0 %}
+              	{% assign showupsellproduct = false %}
+				{% assign  watchCount = 0 %}
+        		{% assign  cleanerAlreadyAdded = 0 %}
+        		{% for item in cart.items %}  
+              
+              	{% if item.product.id == product_id2 %}
+                  {% assign cleanerAlreadyAdded = cleanerAlreadyAdded|plus:1 %}
+                {% endif %} 
+              
+                {% for collection in item.product.collections %}
+                {% assign product_collection = collection.handle %}
+                {% if product_collection == 'watches' or product_collection == 'bevilles-gift-card'%}
+                  {% assign watchCount = watchCount|plus:1 %}
+                {% endif %}
+                {% endfor %}
+              
+              {% if cart.items.size != watchCount %}
+              {% assign showupsellproduct = true %}
+              {% endif %}
+				
+              {% if cleanerAlreadyAdded > 0 %}
+              {% assign showupsellproduct = false %}
+              {% endif %}
+              
+        		{% if item.variant.compare_at_price > item.variant.price %}
+        			{% capture saving %}{{ item.variant.compare_at_price | minus: item.variant.price }}{% endcapture %}
+        			{% assign total_saving = saving | plus: total_saving %}
+        		{% endif %} 
+          		{% if forloop.first %}
+          			{% assign collection_url = item.product.collections.first.url %}
+          			{% if collection_url == nil or collection_url == empty or collection_url == '/collections/frontpage' %}{% assign collection_url = '/collections/all' %}{% endif %}
+          		{% endif %}
+        		{% endfor %}
+        		{% comment %}
+        		<a class="more-link left" href="{{ collection_url }}">{{ 'cart.general.continue' | t }}</a>
+        		<input type="submit" id="checkout" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+      			{% endcomment %}
+      		</div>
+          
+          	<ul class="cart-items plain">
+        		<li class="heading border-bottom cf">
+          			<div class="description">Products</div>
+                  	{% comment %}
+          			<span class="quantity">{{ 'cart.label.quantity' | t }}</span>
+          			<span class="price">{{ 'cart.label.price' | t }}</span>
+                  	{% endcomment %}
+        		</li>
+        		{% for item in cart.items %}
+          		<li class="item border-bottom cf">
+            		<div class="description cf">
+              		<a class="image" href="{{ item.url }}">
+                		<img src="{{ item | img_url: '100x' }}" alt="{{ item.title | escape }}"
+                     		srcset="{{ item | img_url: '100x' }} 100w,
+                             {{ item | img_url: '200x' }} 200w" sizes="100px"/>
+              		</a>
+                      
+              		<div class="description-wrp cf">
+                		<div class="title_n_varient">
+                          <h3>{{ item.product.title | link_to: item.product.url }}</h3>
+                          {% unless item.variant.title contains 'Default' %}
+                          <div class="cart__meta-text">
+                            {% for option in item.product.options %}
+                             <span>{{ option }} : {{ item.variant.options[forloop.index0] }}</span>
+                            {% endfor %}
+                          </div>
+                          {% endunless %}
+                          {% comment %} Line Item Properties {% endcomment %}
+                          {% assign propertySize = item.properties | size %}
+                          {% capture currencySymbolPlus %}+ {{ 0 |  money | replace: '0.00', ''  }}{% endcapture %}  
+                          {% capture boldAdd %}0{% endcapture %}  
+                          {% if propertySize > 0 %}
+                              {% for p in item.properties %}
+                              <div class="cart__meta-text">
+                                  {% assign first_character_in_key = p.first | truncate: 1, '' %}
+                                  {% unless p.last == blank or first_character_in_key == '_' %}
+                                  {{ p.first }}:
+                                  {% if p.last contains '/uploads/' %}
+                                  <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                                  {% else %}
+                                  {{ p.last }}
+                                  {% if p.last contains currencySymbolPlus %}additional{% endif %}
+                                  {% if p.last contains currencySymbolPlus %}
+                                  {% assign addPrice = p.last | split: currencySymbolPlus %}
+                                  {% assign addPriceVal = addPrice | last | times: 1 %}
+                                  {% assign boldAdd = boldAdd | plus: addPriceVal %}
+                                  {% endif %}
+                                  {% endif %}
+                                  {% endunless %}
+                              </div>
+                          {% endfor %}
+                          {% endif %}
+                          {% if item.variant.inventory_management == 'shopify' and item.variant.inventory_quantity < 1 %}
+                          <div class="cart__meta-text">
+                              {{ 'cart.general.backorder' | t }}
+                          </div>
+                          {% endif %}
+
+                          {% assign hasDiscount = false %}
+                          {% for discount in item.discounts %}
+                              {% assign hasDiscount = true %}
+                          {% endfor %}
+
+                          {% assign is_member_price = 'no' %}
+                          {% assign member_price = item.line_price %}
+
+                          {% if customer and settings.enable_memberprice and hasDiscount != true %}
+                          {% assign member_price = item.product.metafields.bevillesnew.member_price | plus:0 %}
+                          {% if member_price > 0 %}
+                          	{% assign member_price_condition = item.product.metafields.bevillesnew.member_price | times: item.quantity | times: 100 %}
+                          	{% if item.line_price > member_price_condition %}
+                          		{% assign is_member_price = 'yes' %}
+                              	{% assign member_price = item.product.metafields.bevillesnew.member_price | times: item.quantity | times: 100 %}
+                          	{% else %}
+                          		{% assign member_price = item.line_price %}
+                          	{% endif %}
+                          {% else %}
+                            {% assign member_price = item.line_price %}
+                          {% endif %}
+                          {% endif %}
+
+                          <input type="hidden" name="boldAdd" value="{{ boldAdd  | times: item.quantity}}" data-price="{{ member_price | money_without_currency }}">
+                          {% if is_member_price == 'yes' %}
+                          <div class="discount">{{ settings.memberdiscounttext }}</div>
+                          {% endif %}
+                          
+                		</div>
+            
+            			<div class="quantity">
+              				<span class="qty">
+                				<a class="qty__toggle qty__toggle-down" href="#">{% include 'svg-minus' %}</a>
+                				<input class="micro select-on-focus" name="updates[]" value="{{ item.quantity }}" />
+                				<a class="qty__toggle qty__toggle-up" href="#">{% include 'svg-plus' %}</a>
+              				</span>
+              				{% comment %}
+                            {% assign predefindqtys = "1,2,3,4,5,6,7,8,9,10" | split: ',' %}
+                            <select class="select-on-focus" name="updates[]" data-loop="{{ forloop.index }}" id="updates_{{ item.id }}">
+                              {% for predefindqty in predefindqtys %}
+                                  {% assign selected = ''%}
+                                  {% assign loopqty = predefindqty | times: 1 %}
+                                  {% if loopqty == item.quantity %}
+                                      {% assign selected = 'selected="selected"'%}
+                                  {% endif %}
+                                  <option {{selected}} value="{{predefindqty}}">{{predefindqty}}</option>
+                              {% endfor %}
+                            </select>
+                            {% endcomment %}
+							<!--<input class="select-on-focus" type="text" size="2" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" /> -->
+            			</div>
+                      
+            			<div class="price">
+                        {% if hasDiscount == true %}
+                          <h5>
+                            <span class="theme-money item-price flayout-cart__price" {% unless item.variant.compare_at_price > item.price %}style="color: #979797"{% endunless %} item-price="{{ item.line_price | money_without_currency }}">{{ item.line_price | money }}</span>
+                            <s>{{item.original_line_price | money  }}</s>
+                            {% for discount in item.discounts %}
+                              <div class="discount">{{ discount.title }}</div>
+                            {% endfor %}
+                          </h5>
+                        {% else %}
+                        <h5>
+                          {% if customer and settings.enable_memberprice %}
+                            {% assign member_price = item.product.metafields.bevillesnew.member_price | plus:0 %}
+                            {% assign member_price_condition = item.product.metafields.bevillesnew.member_price | times: item.quantity | times: 100 %}
+                          	{% if member_price > 0 and item.line_price > member_price_condition %}
+                                <span class="theme-money item-price" item-price="{{ member_price | times: item.quantity | times: 100 | money_without_currency }}">{{ member_price | times: item.quantity | times: 100 | money }}</span>
+                            {% else %}
+                                <span class="theme-money item-price" item-price="{{ item.line_price | money_without_currency }}">{{ item.line_price | money }}</span>
+                            {% endif %}
+                          {% else %}
+                            <span class="theme-money item-price" item-price="{{ item.line_price | money_without_currency }}">{{ item.line_price | money }}</span>
+                          {% endif %}
+                          {% if item.variant.compare_at_price > item.price %}
+                            <s>{{ item.variant.compare_at_price | times: item.quantity | money  }}</s>
+                          {% endif %}
+                          {% if item.product.id == product_id %}
+                            <div class="discount">{{settings.custom_title}}</div>
+                          {% endif %}
+                        </h5>
+              			{% endif %}
+                        {% if showInstallementClass == "afterpay_installement" %}
+                        <span class="{{showInstallementClass}} cart_installement">4 payments of {{item.line_price | divided_by: 4 | money }} with <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/afterpay-logo-png-black-transparent.png?v=1616483054" alt="Afterpay"></span>
+                        {% elsif showInstallementClass== "zip_installement" %}
+                        <span class="{{showInstallementClass}} cart_installement">or pay {{item.line_price| divided_by: 52 | money}} per week.*</span>
+                        {% endif %}
+            			</div>
+                      
+                      	<p class="removelink"><a href="/cart/change?line={{ forloop.index }}&quantity=0" class="remove feature-col" title="Remove from cart">{{ 'cart.general.remove' | t }}</a></p>
+                        
+                      	<div class="move_to_wishlist_wrap"> 	
+                        	<a href="javascript:void(0)" class="move_to_wishlist" data-line_id={{ forloop.index }} data-pid={{ item.product.id }} data-vid={{ item.variant.id }} data-producthandle={{ item.product.handle }}>Move to Wishlist</a>
+                        </div>
+                	</div>
+            	</div>
+          	</li>
+        	{% endfor %}
+      	</ul>
+          
+      <div class="upsell-section-slider">
+        {% if settings.show_upsell2 != blank and showupsellproduct == true%}
+        {% if hide_btn1 != true %}
+          {% if cart_total >= spend_value2 %}
+            <section class="upsell-section upsell-cart">
+              <div class="container">
+                <div class="upsell-content-wrapper">
+                <div class="custom-text">
+                  {{ settings.custom_text2 }}
+                </div>
+                <div class="row">
+                  {% if product2 != blank %}
+                  {% assign variant = product2.selected_or_first_available_variant %}
+                  {% assign featured_image = product2.selected_or_first_available_variant.featured_image | default: product2.featured_image %}
+                  <div class="product-gallery half column">
+                    <a class="main-img-link" href="{{ product2.url }}" title="{{ product2.title | escape }}">
+                      <img src="{{ product2.featured_image | product_img_url: 'large' }}" alt="{{ product2.title | escape }}">
+                    </a>
+                  </div>
+                  <!-- end gallery -->
+                  <!-- begin product form and details -->
+                  <div class="half column product-details">
+                    <div class="product-section padless-top cf product-title-row">
+                      <h1 class="product-title" itemprop="name">{{ product2.title | link_to: product2.url }}</h1>
+                      <div id="price" class="product-price">
+                        {% if settings.discount2 != blank %}
+                          	{% assign price_without_zero = product2.selected_or_first_available_variant.price | divided_by: 100 %}
+                            {% assign tot_dis_ = settings.discount2 | minus: 0 %}
+                            <span>${{tot_dis_ | append: ""}}</span>
+                        	{% if product2.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                              <span class="was-price theme-money">{{ product2.selected_or_first_available_variant.compare_at_price | money }}</span>
+                            {% else %}
+                              <span class="was-price theme-money">{{ product2.selected_or_first_available_variant.price | money }}</span>
+                            {% endif %}
+                        {% else %}
+                          <span class="current-price theme-money">{{ product2.selected_or_first_available_variant.price | money }}</span>
+                          {% if product2.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                          <span class="was-price theme-money">{{ product2.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="product-section">
+                      {% if product2.available %}
+                        <div class="upsellproductform">
+                          <input type="hidden" class="productvariant" value="{{ product2.selected_or_first_available_variant.id }}" />
+                          <div class="">
+                            <span class="">
+                              <button type="button" class="btn upsellproductformbutton">{{ 'products.product.add_to_cart_html' | t }}</button>
+                            </span>
+                          </div>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- end product form and details -->
+                  {% endif %}      
+                </div>
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      {% if settings.show_upsell != blank %}
+        {% if hide_btn != true %}
+          {% if cart_total >= spend_value %}
+            <section class="upsell-section upsell-cart">
+              <div class="container">
+                <div class="upsell-content-wrapper">
+                <div class="custom-text">
+                  {{ settings.custom_text }}
+                </div>
+                <div class="row">
+                  {% if product != blank %}
+                  {% assign variant = product.selected_or_first_available_variant %}
+                  {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
+                  <div class="product-gallery half column">
+                    <a class="main-img-link" href="{{ product.url }}" title="{{ product.title | escape }}">
+                      <img src="{{ product.featured_image | product_img_url: 'large' }}" alt="{{ product.title | escape }}">
+                    </a>
+                  </div>
+                  <!-- end gallery -->
+                  <!-- begin product form and details -->
+                  <div class="half column product-details">
+                    <div class="product-section padless-top cf product-title-row">
+                      <h1 class="product-title" itemprop="name">{{ product.title | link_to: product.url }}</h1>
+                      <div id="price" class="product-price">
+                        {% if settings.discount != blank %}
+                          	{% assign price_without_zero = product.selected_or_first_available_variant.price | divided_by: 100 %}
+                            {% assign tot_dis_ = settings.discount | minus: 0 %}
+                            <span>${{tot_dis_ | append: ""}}</span>
+                        	{% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                              <span class="was-price theme-money">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+                            {% else %}
+                              <span class="was-price theme-money">{{ product.selected_or_first_available_variant.price | money }}</span>
+                            {% endif %}                            
+                        {% else %}
+                          <span class="current-price theme-money">{{ product.selected_or_first_available_variant.price | money }}</span>
+                          {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                          <span class="was-price theme-money">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="product-section">
+                      {% if product.available %}
+                      	<div class="upsellproductform">
+                          <input type="hidden" class="productvariant" value="{{ product.selected_or_first_available_variant.id }}" />
+                          <div class="">
+                            <span class="">
+                              <button type="button" class="btn upsellproductformbutton">{{ 'products.product.add_to_cart_html' | t }}</button>
+                            </span>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- end product form and details -->
+                  {% endif %}      
+                </div>
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    
+      {% if settings.show_upsell1 != blank %}
+        {% if hide_btn1 != true %}
+          {% if cart_total >= spend_value1 %}
+            <section class="upsell-section upsell-cart">
+              <div class="container">
+                <div class="upsell-content-wrapper">
+                <div class="custom-text">
+                  {{ settings.custom_text1 }}
+                </div>
+                <div class="row">
+                  {% if product1 != blank %}
+                  {% assign variant = product1.selected_or_first_available_variant %}
+                  {% assign featured_image = product1.selected_or_first_available_variant.featured_image | default: product1.featured_image %}
+                  <div class="product-gallery half column">
+                    <a class="main-img-link" href="{{ product1.url }}" title="{{ product1.title | escape }}">
+                      <img src="{{ product1.featured_image | product_img_url: 'large' }}" alt="{{ product1.title | escape }}">
+                    </a>
+                  </div>
+                  <!-- end gallery -->
+                  <!-- begin product form and details -->
+                  <div class="half column product-details">
+                    <div class="product-section padless-top cf product-title-row">
+                      <h1 class="product-title" itemprop="name">{{ product1.title | link_to: product1.url }}</h1>
+                      <div id="price" class="product-price">
+                        {% if settings.discount1 != blank %}
+                          	{% assign price_without_zero = product1.selected_or_first_available_variant.price | divided_by: 100 %}
+                            {% assign tot_dis_ = settings.discount1 | minus: 0 %}
+                            <span>${{tot_dis_ | append: ""}}</span>
+                        	{% if product1.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                              <span class="was-price theme-money">{{ product1.selected_or_first_available_variant.compare_at_price | money }}</span>
+                            {% else %}
+                              <span class="was-price theme-money">{{ product1.selected_or_first_available_variant.price | money }}</span>
+                            {% endif %}
+                        {% else %}
+                          <span class="current-price theme-money">{{ product1.selected_or_first_available_variant.price | money }}</span>
+                          {% if product1.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+                          <span class="was-price theme-money">{{ product1.selected_or_first_available_variant.compare_at_price | money }}</span>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="product-section">
+                      {% if product1.available %}
+                        <div class="upsellproductform">
+                          <input type="hidden" class="productvariant" value="{{ product1.selected_or_first_available_variant.id }}" />
+                          <div class="">
+                            <span class="">
+                              <button type="button" class="btn upsellproductformbutton">{{ 'products.product.add_to_cart_html' | t }}</button>
+                            </span>
+                          </div>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <!-- end product form and details -->
+                  {% endif %}      
+                </div>
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </div>
+     </div>
+        
+        <div class="column cart-right-section">
+          <div class="payment-logos">
+              <img src={{ settings.zippay_logo | img_url: '150x' }}>
+              <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/Humm_core_logo_RGB-01_300x60px_small_6a1b6009-a26e-4800-a67e-ce9e58fc6dd7.png?v=1571884828">
+              <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/afterpay-logo-png-black-transparent.png?v=1616483054">
+          </div>
+          
+          <div class="delivery-option">
+            
+<!--             <div id="location-container">
+              <label for="bevilles-home-radio" class="btn methods btn--secondary">Deliver my order</label>
+              <span>or</span>
+              <label for="bevilles-store-radio" class="btn methods click-n-collect" style="">Click &amp; collect</label>
+  			</div> -->
+            {% include 'clickandcollect' %}
+          </div>
+          
+      
+      {% comment %}
+      <div class="space-under light-space-above align-right">
+        <input type="submit" class="alt" id="update-cart" name="update" value="{{ 'cart.general.update' | t }}" />
+      </div>
+      {% endcomment %}
+      {% if section.settings.cart_notification_show and section.settings.cart_notification_pos == 'under-items' %}
+      <div class="notification">
+        <div class="rte">{{ section.settings.cart_notification_text }}</div>
+      </div>
+      {% endif %}
+      {% if settings.show_multiple_currencies %}
+      <p class="rte currency-different">
+        {{ 'cart.multi_currency.notice_html' | t: shop_name: shop.name, shop_currency: shop.currency, selected_currency: '<strong class="selected-currency"></strong>' }}
+      </p>
+      {% endif %}
+      
+        
+      
+        <div class="section padless-top light-space-above">
+          <div class="add-note-section">
+            <div class="note-label">
+            {% if section.settings.show_notes %}
+              <input id="note" class="input-checkbox" type="checkbox"  name="">
+              <label for="note">{{ 'cart.label.note' | t }}</label>
+            {% else %}
+              &nbsp;
+            {% endif %}
+            </div>
+
+            <div class="note-textarea">
+              {% if section.settings.show_notes %}
+                <textarea id="note" name="note" rows="10" cols="50">{{ cart.note }}</textarea>
+              {% else %}
+                &nbsp;
+              {% endif %}
+            </div>
+          </div>          
+
+
+          <div class="cart-amount-summary">
+            <div class="amount-summary">
+              <div class="amount-summary-row">
+                <div class="amount-summary-col">
+            		<label class="desktop" for="checkout">{{ 'cart.label.subtotal' | t }}</label>
+            		<label class="mobile" for="checkout">{{ 'cart.label.subtotal' | t }}</label>
+                </div>
+                <div class="amount-summary-col">
+                    <h2 class="">
+                        <span class="theme-money cart_total">{{ cart.total_price | money }}</span>
+                    </h2>
+                </div>
+              </div>
+              
+              <div class="amount-summary-row">
+                <div class="amount-summary-col">
+                  <span>Saving</span>
+                </div>
+                <div class="amount-summary-col">
+                  <span class="total-saving-amount">-{{ total_saving | money }}</span>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="isBevdcheckedmember" value="" />
+            {% if showInstallementClass == "afterpay_installement" %}
+                <span class="{{showInstallementClass}} cart_installement">4 payments of {{cart.total_price | divided_by: 4 | money }} with <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/afterpay-logo-png-black-transparent.png?v=1616483054" alt="Afterpay"></span>
+                {% elsif showInstallementClass== "zip_installement" %}
+                <span class="{{showInstallementClass}} cart_installement">or pay {{cart.total_price| divided_by: 52 | money}} per week.*</span>
+                  {% endif %}    
+
+            <input type="submit" id="checkout" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+            {% comment %}<div id='vntc-wrp'></div>{% endcomment %}
+            {% if section.settings.certification_logo3 != nil %}
+            <div class="badge-cart">
+              <div class="badge-item">
+                <a href="javascript:void(0);" title="" class="icon-delivery-return">
+                  <img src="{{ section.settings.certification_logo3 | img_url: '320x' }}" alt="{{ section.settings.certification_logo3.alt }}">
+                </a>
+              </div> 
+            </div>
+              {% endif %}
+            {% comment %}{% if settings.enable_humm_cart %}
+            <div class="hummWidgetBox widgetBox">
+              <script data-min="0" data-max="{{ settings.payment_threshold }}" src="https://widgets.shophumm.com.au/content/scripts/price-info.js?productPrice={{cart.total_price | divided_by: 100.00}}"></script>
+            </div>
+            {% endif %}{% endcomment %}
+            {% if additional_checkout_buttons %}
+            <div class="extra-checkout-buttons">
+              {{ content_for_additional_checkout_buttons }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+          </div>
+        </div>
+    </form>
+  {% endif %}
+</div>
+</div>
+{% assign free_gift_with = '39341757726854' %} 
+{% assign variant_id = '29812836466791' %}
+
+  <script>
+  (function($) {
+    var cartItems = {{ cart.items | json }},
+        qtyInTheCart = 0,
+        cartUpdates = {},
+        free_gift_with = 0,
+        cartTotal = {{ cart.total_price }};
+    for (var i=0; i<cartItems.length; i++) {
+      if ( cartItems[i].id === {{ free_gift_with }} ) {
+          	free_gift_with = 1;
+          }
+      if ( cartItems[i].id === {{ variant_id }} ) {
+        qtyInTheCart = cartItems[i].quantity;
+        break;
+      }
+    }
+    if ( ( cartItems.length === 1 ) && ( qtyInTheCart > 0 ) ) {
+      return;
+      {% comment %}cartUpdates = { {{ variant_id }}: 0 }{% endcomment %}
+    }
+    
+    else if ( ( cartItems.length >= 1 ) && ( qtyInTheCart !== 1 ) && (free_gift_with > 0 ) ) {
+      cartUpdates = { {{ variant_id }}: 1 }
+    }
+    else {
+      return;
+    }
+    var params = {
+      type: 'POST',
+      url: '/cart/update.js',
+      data: { updates: cartUpdates },
+      dataType: 'json',
+      success: function(stuff) { 
+        window.location.href = '/cart';
+      }
+    };
+    $.ajax(params);
+  })(jQuery);
+  </script>
+{% schema %}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_notes",
+        "label": "Enable cart notes",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Free Shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "free-ship",
+        "label": "Display Free Shipping in cart",
+        "default":   true
+      }, 
+      {
+          "type":   "text",
+          "id":     "free-ship_val",
+          "label":     "Free Shipping minimum purchase amount",
+          "default":   "2000"
+      }, 
+      {
+        "type": "richtext",
+        "id": "free-ship_html",
+        "label": "Free Shipping message",
+        "default":   "<p>Order [x] more to get free shipping</p>",
+        "info": "Ex: Order [x] more to get free shipping"
+        
+      },
+      {
+        "type": "richtext",
+        "id": "free-ship_html2",
+        "label": "Qualified for Free Shipping message",
+        "default":   "<p>You are now qualified for free shipping</p>"
+        
+      },
+      {
+        "type": "header",
+        "content": "Cart announcement"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_notification_show",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "richtext",
+        "id": "cart_notification_text",
+        "label": "Text"
+      },
+      {
+        "type": "select",
+        "id": "cart_notification_pos",
+        "label": "Position",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Under page title"
+          },
+          {
+            "value": "under-items",
+            "label": "Under items"
+          }
+        ]
+      },
+	{
+        "type": "image_picker",
+        "id": "certification_logo3",
+        "label": "Secure checkout Logo"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,325 @@
+<!doctype html>
+<html class="no-js" lang="{{ shop.locale }}">
+<head>
+  <script src="https://www.googleoptimize.com/optimize.js?id=OPT-M28FGF5"></script>
+{% include 'limespot' %}
+  <!-- Canopy v2.8.7 -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="theme-color" content="{{ settings.feature_col }}">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  
+  {% include 'favicon' %}
+  <title>
+  {{ page_title }}{% if current_tags %} &#124; {{ 'general.meta.tagged' | t }} "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &#124; {{ 'general.meta.page' | t }} {{ current_page }}{% endif %}{% if template.name == 'product' %} &#124; {% assign skus = product.variants.first.sku | split: "-" %}{% if skus.size == 1 %}{{product.variants.first.sku}}{% else %}{% for sku in skus %}{% if forloop.first == true %}{{sku}}{% endif %}{% endfor %}{% endif %}{% endif %}{% unless page_title contains shop.name %} &#124; Bevilles{% endunless %}
+  </title>
+
+  {% if page_description %}
+  <meta name="description" content="{% if template.name == 'product' %}{{product.title}}.{% for tag in product.tags %}{% if tag contains "Department|" %} Shop Bevilles for beautiful {{tag | replace: "Department|", ""}} at the best price.{% endif %}{% endfor %}{%else%}{{ page_description | escape }}{% endif %}" />
+  {% endif %}
+  <link rel="canonical" href="{{ canonical_url }}" />
+
+  <script>
+    var theme = {
+      sitewide_msg_prefix: "{{ settings.sitewide_msg_prefix }}",
+      suggestedSearch: "{{ settings.suggestedSearch }}"
+    }
+    window.cartCount = {{ cart.item_count }};
+    
+    window.skafosShopId={{shop.id}}
+
+
+
+ async function skafosSeeSimilar(e){
+  var skafosTemplate = document.querySelector('.skafosSimilarProductTemplate').cloneNode(true);
+  
+  if(e.dataset.seeSimilarCompleted) return;
+  e.dataset.seeSimilarStarted="true";
+  const data={
+     "productID":"gid://shopify/Product/"+e.dataset.skafosProductId,
+     "collectionID":"gid://shopify/Collection/"+e.dataset.skafosCollectionId,
+     "count":5,
+     "shopID": "gid://shopify/Shop/"+window.skafosShopId
+     }
+  const rawResponse =  await fetch('https://api.skafos.ai/v1/products/similar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  
+  const content =  await rawResponse.json();
+  var html=``;
+  
+  var similarProducts = [];
+  
+  for(var i=0;i<content.result.similarProducts.length;i++){
+    var item=content.result.similarProducts[i];
+    var similarProduct = skafosTemplate.cloneNode(true);
+    similarProduct.querySelector("[data-skafos-product-id]").dataset.skafosProductId=item.id.split('/').pop();
+    var links = similarProduct.querySelectorAll("[data-skafos-similar-link]");
+    links.forEach((link) => {
+      link.href = item.pdp_url;
+    });
+    var titles = similarProduct.querySelectorAll("[data-skafos-similar-title]");
+    titles.forEach((title) => {
+      title.innerHTML = item.name;
+    });
+    
+    var fastDelivery = similarProduct.querySelectorAll("[data-skafos-similar-fast_delivery]");
+    fastDelivery.forEach((fastD) => {
+      fastD.innerHTML = '';
+    });
+    
+    var reviews = similarProduct.querySelectorAll("[data-skafos-similar-review]");
+    reviews.forEach((review) => {
+      review.innerHTML = '';
+    });
+    
+    var metals = similarProduct.querySelectorAll("[data-skafos-similar-metal]");
+    metals.forEach((metal) => {
+      metal.innerHTML = '';
+    });
+    
+    var images = similarProduct.querySelectorAll("[data-skafos-similar-image]");
+    images.forEach((image) => {
+      image.src = item.image_url;
+      image.srcset = item.image_url;
+      image.dataset.src = item.image_url;
+      image.dataset.srcset = item.image_url;
+    });
+    
+    var installmentTag = similarProduct.querySelectorAll("[data-skafos-similar-installment]");
+    installmentTag.forEach((installmentTag) => {
+      
+      var installementText ='';
+      var CP = item.min_price;
+      if (CP > 1 && CP < 1501) {
+        var emi = ((CP)/4);
+        var with2Decimals = emi.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
+        installementText += '<span class="installement-limespot">Or 4 payments of $'+ with2Decimals +' with <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/afterpay-logo-png-black-transparent.png?v=1616483054" alt="Afterpay"></span>';
+      }
+
+      if (CP > 1500 && CP < 2000){
+           var emi = ((CP)/52);
+        var with2Decimals = emi.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
+        installementText += '<span class="installement-limespot">or pay $'+with2Decimals +' per week.*</span>';
+      }
+      
+      if (CP >= 2000){
+        var emi = ((CP)/5);
+        var with2Decimals = emi.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
+        installementText += '<span class="installement-limespot">5 fortnightly payments of $'+with2Decimals+' <img src="https://cdn.shopify.com/s/files/1/0057/6657/8279/files/logo-orange.svg?v=1626847340" alt="Humm"></span>';
+      }
+      
+      installmentTag.innerHTML = installementText; 
+      
+      });
+      
+    var prices = similarProduct.querySelectorAll("[data-skafos-similar-price]");
+    var priceD = '';
+    prices.forEach((price) => {
+      
+      priceD += '<span class="amount am">' + "$"+(item.min_price) + '</span>';
+      if (item.max_price > item.min_price) {
+          priceD += ' <del>' + "$"+(item.max_price) + '</del>';
+      }        
+      price.innerHTML = priceD; 
+      //price.innerHTML = "$" + item.min_price;
+    });
+    
+    var pdp_url = similarProduct.querySelectorAll("[data-skafos-similar-pdp_url]");
+    pdp_url.forEach((pdp_url) => {
+      pdp_url.href = item.pdp_url;
+    });
+    
+    
+    similarProducts.push(similarProduct);
+  }
+  
+  for(var i=similarProducts.length-1;i>=0;i--){
+    e.parentNode.parentNode.parentNode.parentNode.parentNode.insertBefore(similarProducts[i], e.parentNode.parentNode.parentNode.parentNode.nextSibling);
+  }
+  
+  e.querySelector('[data-seesimilartextstarted]').innerHTML='Items Found!';
+  e.dataset.seeSimilarCompleted=true;
+  setTimeout(function (){
+   e.dataset.seeSimilarCompletedFinal=true;
+  },3000)
+
+}
+  </script>
+ 
+  {{ 'preguide.min.js' | asset_url | script_tag }}
+  {% include 'social-meta-tags' %}
+  {{ 'custom.scss.css' | asset_url | stylesheet_tag }}
+  
+  {{ content_for_header }}
+  {% include 'gtm_head' %}
+  <script>(function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"20250530"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");</script> 
+  {{ 'preezieScoreInit.js' | asset_url | script_tag }}
+  
+	<script id="grcap_autolink_script" src="https://fn.autolink.growthcaptain.fr/userScript?shop=bevilles-jewellers.myshopify.com"></script>
+</head>
+
+<body class="opt501 opt501-v2 template-{{ template.name }} {% if template.suffix != blank %}template-sfx-{{ template.suffix }}{% endif %}">
+  {% include 'gtm_body' %}
+  {% include 'sitewide-message' %}
+
+  <div id="page-wrap">
+    <div id="page-wrap-inner">
+      <div id="page-wrap-content">
+        <div class="container">
+          {% section 'header' %}
+           {% include 'newmenu' %}
+        </div>
+
+        <div id="content">
+          {% if template != 'collection' %}
+          {% render 'breadcrumbs' %}
+          {% endif %}
+          {{content_for_layout}}
+		  <limespot></limespot>
+        </div>
+      </div><!-- /#page-wrap-content -->
+
+      {% section 'footer' %}
+
+      <a style="display:none;" id="page-overlay" href="#" aria-label="{{ 'layout.header.close_mobile_nav_aria_label' | t | escape }}"></a>
+      <div class="menu-overlay"></div>
+    </div>
+  </div><!-- /#page-wrap -->
+
+  {% include 'cart-summary' %}
+
+  {% include 'currencies' %}
+
+  <!-- Custom Scripts -->
+  {%- include 'bold-product' with product, hide_action: 'header' -%}
+  {%- include 'bold-common' -%}
+  {% include 'theme-json-object' %}
+
+  <!-- begin-customer-points -->
+  {% include 'customer-points' %}
+  <!-- end-customer-points -->
+  
+  <!--begin-bc-sf-filter-css-->
+  {% include 'bc-sf-filter-style' %}
+  <!--end-bc-sf-filter-css-->
+  
+  {% include 'zendesk-head' %}
+  {%- if settings.enable_shogun == true -%}
+    {% render 'shogun-head' %}  
+  {%- endif -%}
+  {% include 'member-price-checkout' %}
+  
+  {{ 'custom.js' | asset_url | script_tag }}
+  {{ 'wishlist.js' | asset_url | script_tag }}
+  {{ 'jquery.fancybox.min.css' | asset_url | stylesheet_tag }}
+  {{ 'jquery.fancybox.min.js' | asset_url | script_tag }}
+  <div id="preezie-widget-div-id-popup"></div>
+  <script type="text/javascript">
+    PREEZIE_GUIDE.render([
+      {
+        guideKey: 'EPO-f463fff1-3874-495f-9eb3-08d80353573b',
+        version: '1.0.0',
+        renderTo: 'preezie-widget-div-id-popup'
+      }
+    ]);
+  </script>
+  <script>
+    jQuery(document).ready(function(){
+      jQuery('#giftcard_form').submit(function(event){
+        event.preventDefault();
+        jQuery('#addproductongift').attr('disabled','disabled').text('Adding to cart...');
+		var gc_name = jQuery('#giftcard_form #gc_name').val();
+        var gc_email = jQuery('#giftcard_form #gc_email').val();
+        var gc_message = jQuery('#giftcard_form #gc_message').val();
+        jQuery('.giftcardhiddenvalue').empty();
+        jQuery('.giftcardhiddenvalue').append('<input type="hidden" name="properties[_giftcard]" value="Yes"  />');
+        jQuery('.giftcardhiddenvalue').append('<input type="hidden" name="properties[_name]" value="'+gc_name+'"  />');
+        jQuery('.giftcardhiddenvalue').append('<input type="hidden" name="properties[_email]" value="'+gc_email+'"  />');
+        jQuery('.giftcardhiddenvalue').append('<input type="hidden" name="properties[_message]" value="'+gc_message+'"  />');
+        jQuery('.button-entryforgift button').click();
+        setTimeout(function(){ jQuery('#addproductongift').text('Added'); }, 1000);
+        setTimeout(function(){ jQuery.fancybox.close(); jQuery('#addproductongift').removeAttr('disabled').text('Add to cart'); }, 2000);
+      });
+      jQuery('#gift_check_form').on('submit', function(event){
+        event.preventDefault();
+		var $giftcheckaction = jQuery('#gift_check_form').attr('action');
+        // do ajax call to validate GC
+        jQuery.ajax({
+            url: $giftcheckaction,
+            method: 'POST',
+            data: {
+                gc_code: $('form#gift_check_form input#checkout_giftcard_number').val(),
+              	gc_email: $('form#gift_check_form input#checkout_giftcard_email').val(),
+            },
+            complete: function (ret) {
+          		ret = JSON.parse(ret.responseText);
+                if (ret.is_valid == true) {
+                    jQuery('.giftcardresponse').html('Congratulation! your balance is <span>'+ret.giftcarddata.balance+'</span> Expired on: <span>'+ret.giftcarddata.expires_on+'</span>');
+                } else {
+                    jQuery('.giftcardresponse').html('Oops! '+ret.message);
+                }
+            }
+        });
+    });                          
+});
+  </script>
+  <!--begin-bc-sf-filter-js-->
+  {% include 'bc-sf-filter' %}
+  <!--end-bc-sf-filter-js-->
+  
+  {% if template contains 'product' %}
+    {% include 'product-ring-chart' %}
+  	{% assign product_qty = 0 %}
+      {% for variant in product.variants %}
+        {% if variant.inventory_quantity > 0 %}
+          {% assign product_qty = product_qty | plus: variant.inventory_quantity %}
+        {% endif %}
+      {% endfor %}
+      {% for tag in product.tags %}
+        {% if tag == 'Soldredirect' and product_qty < 1 %}
+          <script type="text/javascript">
+            window.location = "/";
+          </script>
+        {% endif %}
+      {% endfor %}
+  {% endif %}
+  
+  {% include 'stockinstore' %}
+  {% if settings.criteo_enable %}
+    {% include 'criteo-tracking' %}
+  {% endif %}
+  {% section 'exit-popup' %}
+   {% include 'vic-popup' %}
+  {% include 'clickandcollectjs' %}
+  {% if customer %}
+    <script type="text/javascript">
+     window.customerId = "{{ customer.id }}"; 
+     window.customerEmail = "{{ customer.email }}"; 
+    </script>
+  {% endif %}
+  {% include 'gorgias-chat-custom' %}
+  
+  {% if template contains 'collection' or template contains 'product' %}
+  <script src="https://widget.reviews.io/product/dist.js"></script>
+  <script src="https://widget.reviews.io/rating-snippet/dist.js"></script>
+  <link rel="stylesheet" href="https://widget.reviews.io/rating-snippet/dist.css" />
+
+  <script>
+    setTimeout(function(){
+      ratingSnippet("ruk_rating_snippet",{
+        store: "bevilles.com.au",
+        color: "#f47e27",
+        linebreak: false,
+        text: "Reviews",
+        minRating: 3,
+      });
+    }, 3000);
+  </script>
+  {% endif %}
+</body>
+</html>

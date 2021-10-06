@@ -1,0 +1,77 @@
+{% assign show_single_variant_details = true %}
+
+{% capture url %}{% if collection %}{{ product.url | within: collection }}{% else %}{{ product.url }}{% endif %}{% endcapture %}
+
+{% assign max_cols = section.settings.products_per_row | default: 4 %}
+
+
+{% comment %} Un-comment the following lines to show larger product images on the homepage. Can be 2, 3, 4, 6. {% endcomment %}
+{% comment %}
+{% if template contains 'index' %}
+{% assign max_cols = 2 %}
+{% endif %}
+{% endcomment %}
+
+<div class="product-block {% if settings.label_soldout_show and product.available == false %}sold-out {% endif %} {{ product-block | default: 'flex column' }}{% unless section.settings.slider_enable == true %} max-cols-{{ max_cols }} min-cols-2{% endunless %}">
+  <div class="image {% if settings.product_grid_hover_image and product.images.size > 1 %}image--with-secondary{% endif %}">
+    <div class="inner">
+      <a href="{{ url }}">
+        <div class="reveal">
+          {% include 'responsive-image', image: product.featured_image %}  
+
+          {% if settings.product_grid_hover_image and product.images.size > 1 %}
+            <div class="image__secondary">
+              <div class="rimage-outer-wrapper lazyload fade-in"
+                  data-bgset="{% include 'bgset', image: product.images[1] %}"
+                  data-sizes="auto"
+                  data-parent-fit="contain">
+                <noscript>
+                  <div class="rimage-wrapper" style="padding-top:{{ 1 | divided_by: product.images[1].aspect_ratio | times: 100 }}%">
+                    <img src="{{ product.images[1] | img_url: '1024x1024' }}" alt="{{ product.images[1].alt | escape }}" class="rimage__image">
+                  </div>
+                </noscript>
+              </div>
+            </div>
+          {% endif %}
+        </div>    
+        
+        
+      </a>
+
+      {% if settings.prod_quick_buy_show %}
+      <div class="quick-buy-wrap pos-{{ settings.prod_quick_buy_pos }}">
+        <a class="quick-buy {% if settings.prod_quick_buy_pos == 'middle' %}giant{% else %}big{% endif %}-round-button" href="{{ url }}"><span>{{ 'products.general.quick_buy_html' | t }}</span></a>
+      </div>
+
+      {% include 'quick-buy-placeholder' %}
+      {% endif %}
+    </div>
+    {% comment %}
+    {% include 'product-label' %}
+    {% endcomment %} 
+  </div>
+
+
+  <div class="{% if settings.prod_block_layout contains 'beside' %}ft ftw ft-nm{% endif %}">
+    <div class="ftr">
+      <a class="title ftc" href="{{ url }}">{{ product.title }}</a>
+
+      <div class="price ftc {% if product.compare_at_price > product.price %}on-sale{% endif %}">
+        {% if product.price_varies %}
+        <span class="from">{{ 'products.general.from' | t }}</span>
+        {% endif %}
+        <span class="amount theme-money"><span class="money" data-product-id="{{ product.id }}">{{ product.price | money }}</span></span>
+        {% if product.compare_at_price > product.price %}
+        <del><span class="theme-money">{{ product.compare_at_price | money }}</span></del>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if product.metafields.spr.reviews != blank %}
+    <div class="themed-product-reviews">
+      <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+    </div>
+  {% endif %}
+</div>
+{% assign forloop_index = false %}
